@@ -1,0 +1,48 @@
+                           _   _               _       
+                          | | | |             (_)      
+ ___ _   _ _ __   ___  _ _| |_| |__   _ _  __ _  __ _ 
+/ __| | | | '_ \ / _ \/ __| __| '_ \ / _ \/ __| |/ _` |
+\__ \ |_| | | | |  __/\__ \ |_| | | |  __/\__ \ | (_| |
+|___/\__, |_| |_|\___||___/\__|_| |_|\___||___/_|\__,_|
+      __/ |                         UNION OF THE SENSES
+     |___/
+
+
+====[ WHAT IS IT? ]====
+Live audio visualiser written in C using openGL and various audio backends.
+You can customise visualisations easily with GLSL!
+
+
+====[ COMPILING/RUNNING ]====
+
+Requires pulseaudio, FFTW3, GTK3+ (at least 3.16) and epoxy.
+Just ./configure, make and run.
+
+
+====[ TODO ]====
+
+-Make HUD mode use the maximize function rather than fullscreen as fullscreen
+often leads to problems on certain wms.
+-Sub data more efficiently - don't upload entire array in spec if not greater than
+current - instead float down. Also don't get audio until screen is ready - also
+don't upload x pointlessly 
+-Fix overall logical structure - clean globals, move GTK & GL to seperate files
+-Make better logarithmic mode - ie figure out how to make octaves equally spaced
+-Make fancy new mode optional - fix gain slider
+-Selection of whether STFT window should automatically overlap?
+-Spetrogram mode
+-Implement commandline options for HUD mode handling
+-Implement a plugins system for visualisations
+-Use asynchronous pulseaudio api for all operations
+-Grid mode for accurate spectrum analysis
+-Preferences dialogue
+	-Slider bar for logarithmic and linear amplification
+	-Settings for controlling latency and zoom
+-Figure out if wayland problems are synesthesia's fault or GtkGLArea's
+
+
+====[ WHAT'S DONE ]====
+
+-Basic oscilloscope and spectrum (using FFTW) modes
+-GUI setup using GtkBuilders
+-Fullscreen, HUD, and normal modes

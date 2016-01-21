@@ -1,0 +1,10 @@
+====[ Version 0.2 ]====
+Complete rewrite and migration to autotools in order to fix program organisation
+and incorporate new audio backends.
+
+====[ Version 0.1 ]====
+
+Works, somehow. HUD and fullscreen modes implemented and working, oscilloscope
+and spectrum analyser modes are both functional. I'm still learning about all
+the fancy GTK+3 and modern openGL things, so it's a bit of a mess. Currently it
+only works with pulseaudio.

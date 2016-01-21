@@ -1,0 +1,7 @@
+GtkApplicationWindow {
+	background-color: transparent; 
+}
+
+GtkMenuBar {
+	background-color: @theme_bg_color;
+}

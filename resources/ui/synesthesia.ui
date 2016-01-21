@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <menu id="menubar">
+	<submenu>
+	  <attribute name="label">_File</attribute>
+	  <section>
+      <item>
+        <attribute name="label" translatable="yes">_Fullscreen</attribute>
+        <attribute name="action">app.fullscreen</attribute>
+        <attribute name="accel">&lt;f&gt;f</attribute>
+      </item>
+	  </section>
+	  <section>
+	  <item>
+        <attribute name="label" translatable="yes">_Quit</attribute>
+        <attribute name="action">app.quit</attribute>
+        <attribute name="accel">&lt;Primary&gt;q</attribute>
+      </item>
+	  </section>
+	</submenu>
+	<submenu>
+      <attribute name="label" translatable="yes">_Visualisation</attribute>
+      <item>
+        <attribute name="label" translatable="yes">Oscilloscope</attribute>
+        <attribute name="action">app.mode</attribute>
+        <attribute name="accel">&lt;o&gt;o</attribute>
+        <attribute name="target">oscilloscope</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Spectrum</attribute>
+        <attribute name="action">app.mode</attribute>
+        <attribute name="accel">&lt;s&gt;s</attribute>
+        <attribute name="target">spectrum</attribute>
+      </item>
+    </submenu>
+	<submenu>
+	  <attribute name="label" translatable="yes">_Devices</attribute>
+	  <item>
+	    <attribute name="label" translatable="yes">Refresh</attribute>
+        <attribute name="action">app.refresh</attribute>
+	  </item>
+	</submenu>
+    <submenu>
+      <attribute name="label" translatable="yes">_Help</attribute>
+      <item>
+        <attribute name="label" translatable="yes">About</attribute>
+        <attribute name="action">app.about</attribute>
+      </item>
+    </submenu>
+  </menu>
+  
+  <object class="GtkApplicationWindow" id="SynesthesiaWindow">
+    <property name="can_focus">False</property>
+    <property name="border_width">0</property>
+    <property name="default_width">600</property>
+    <property name="default_height">400</property>
+    <child>
+      <object class="GtkBox" id="main_box">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">0</property>
+        <child>
+		  <object class="GtkGLArea" id="glarea">
+			<signal name="realize" handler="glarea_init"/>
+			<signal name="render" handler="glarea_render"/>
+			<property name="visible">True</property>
+			<property name="can_focus">False</property>
+			<property name="hexpand">True</property>
+			<property name="vexpand">True</property>
+		  </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

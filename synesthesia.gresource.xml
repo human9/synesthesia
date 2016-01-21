@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource>
+    <file preprocess="xml-stripblanks">ui/synesthesia.ui</file>
+    <file>ui/styles.css</file>
+    <file>ui/logo.png</file>
+    <file>shaders/v.glsl</file>
+    <file>shaders/f.glsl</file>
+  </gresource>
+</gresources>
