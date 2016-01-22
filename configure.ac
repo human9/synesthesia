@@ -16,7 +16,7 @@ PKG_CHECK_MODULES(XML, libxml-2.0)
 PKG_CHECK_MODULES(PULSEAUDIO, libpulse-simple, have_pulse=true, have_pulse=false)
 if test "x${have_pulse}" = "xtrue" ; then
 	AC_DEFINE([HAVE_PULSE], [1], [Use PulseAudio])
-	AC_SUBST([PULSE_FILE], ["pulse-backend.c"])
+	AC_SUBST([PULSE_FILE], ["pulse-input.c"])
 fi
 mingw="mingw"
 if test "${CC#*$mingw}" != "$CC"; then

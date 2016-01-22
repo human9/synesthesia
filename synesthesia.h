@@ -7,7 +7,7 @@
 #include "opengl-backend.h"
 
 #ifdef HAVE_PULSE
-#include "pulse-backend.h"
+#include "pulse-input.h"
 #endif
 
 void activate(GtkApplication *app, gulong *sig_id);

@@ -4124,7 +4124,7 @@ if test "x${have_pulse}" = "xtrue" ; then
 
 $as_echo "#define HAVE_PULSE 1" >>confdefs.h
 
-	PULSE_FILE="pulse-backend.c"
+	PULSE_FILE="pulse-input.c"
 
 fi
 mingw="mingw"

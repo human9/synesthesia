@@ -1,7 +1,7 @@
 #include <string.h>
 #include <pulse/simple.h>
 #include "synesthesia.h"
-#include "pulse-backend.h"
+#include "pulse-input.h"
 #include <string.h>
 
 pcmframe temp_buffer[OSC_NUMPOINTS];
