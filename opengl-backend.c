@@ -2,7 +2,15 @@
 
 // GL programs and vbos
 GLuint program, vbo_left, vbo_right, gl_vao;
-GLint attr_osc, uni_pos; 
+GLint attr_osc, uni_pos, uni_len; 
+static gboolean repainter(GtkWidget *widget);
+
+struct point {
+	GLshort x;
+	GLshort y;
+};
+struct point osc_left[OSC_NUMPOINTS];
+struct point osc_right[OSC_NUMPOINTS];
 
 GLuint compile_shader(const char* src, GLenum type)
 {
@@ -80,6 +88,7 @@ GLint get_uniform(GLuint program, const char *name)
 
 gboolean glarea_init(GtkGLArea *area)
 {
+	gtk_widget_add_tick_callback(GTK_WIDGET(area), (GtkTickCallback)repainter, NULL, NULL);
 	gtk_gl_area_make_current(GTK_GL_AREA(area));
 	if (gtk_gl_area_get_error(GTK_GL_AREA(area)) != NULL)
 	{
@@ -94,22 +103,18 @@ gboolean glarea_init(GtkGLArea *area)
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	struct point {
-		GLfloat x;
-		GLfloat y;
-	};
-	struct point osc_left[OSC_NUMPOINTS];
-	struct point osc_right[OSC_NUMPOINTS];
-
+	
+	
+	GLfloat x_points[OSC_NUMPOINTS];
 	for (int i = 0; i < OSC_NUMPOINTS; i++)
 	{
-		osc_left[i].x = ((float)i-OSC_NUMPOINTS/2.0)/(OSC_NUMPOINTS/2.0);
+		osc_left[i].x = i;
 		osc_left[i].y = 0;
-		osc_right[i].x = ((float)i-OSC_NUMPOINTS/2.0)/(OSC_NUMPOINTS/2.0);
+		osc_right[i].x = i; 
 		osc_right[i].y = 0;
+		x_points[i] = ((float)i-OSC_NUMPOINTS/2.0)/(OSC_NUMPOINTS/2.0);
 	}
-
+	
 	glGenBuffers(1, &vbo_left);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo_left);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(osc_left),
@@ -125,6 +130,7 @@ gboolean glarea_init(GtkGLArea *area)
 
 	attr_osc = get_attrib(program, "osc"); 
 	uni_pos = get_uniform(program, "y_pos");
+	uni_len = get_uniform(program, "len");
 
 	glGenVertexArrays(1, &gl_vao);
 	glBindVertexArray(gl_vao);
@@ -134,21 +140,21 @@ gboolean glarea_init(GtkGLArea *area)
 
 gboolean glarea_render(GtkGLArea *area)
 {
-	glClearColor(0, 0, 0, 1);
+	glClearColor(0, 0, 0, 0.7);
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	glUseProgram(program);
 	glBindVertexArray(gl_vao);
 	glEnableVertexAttribArray(attr_osc);
-
-	glBindBuffer(GL_ARRAY_BUFFER, vbo_left);
+	glUniform1f(uni_len, OSC_NUMPOINTS / 2.0);
 
 	// Left channel
-	glUniform1f(uni_pos, (float)-0.5);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_left);
+	glUniform1f(uni_pos, 0.5);
 	glVertexAttribPointer(
 		attr_osc,
 		2,
-		GL_FLOAT,
+		GL_SHORT,
 		GL_FALSE,
 		0,
 		0
@@ -156,11 +162,12 @@ gboolean glarea_render(GtkGLArea *area)
 	glDrawArrays(GL_LINE_STRIP, 0, OSC_NUMPOINTS);
 	
 	// Right channel
-	glUniform1f(uni_pos, (float)0.5);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_right);
+	glUniform1f(uni_pos, -0.5);
 	glVertexAttribPointer(
 		attr_osc,
 		2,
-		GL_FLOAT,
+		GL_SHORT,
 		GL_FALSE,
 		0,
 		0
@@ -172,19 +179,53 @@ gboolean glarea_render(GtkGLArea *area)
 	return true;
 }
 
-/*
-static void oscilloscope(GtkWidget *widget)
+pcmframe *pcm;
+int count, clear;
+
+static gboolean repainter(GtkWidget *widget)
 {
-	//int arraySize = 4096;
-	//float left_buffer[arraySize];
-	//float right_buffer[arraySize];
+	if ((pcm = getbuffer(&count, &clear)) != NULL)
+	{
+		int i;
+		if (clear)
+		{
+			for (i = 0; i < OSC_NUMPOINTS - count * BUFFSIZE; i += BUFFSIZE)
+			{
+				for (int c = 0; c < BUFFSIZE; c++)
+				{
+					osc_left[c + i].y = pcm[c + i + count*BUFFSIZE].l;
+					osc_right[c + i].y = pcm[c + i + count*BUFFSIZE].r;
+				}
+			}
+		}
+		else
+		{
+			for (i = 0; i < OSC_NUMPOINTS - count * BUFFSIZE; i += BUFFSIZE)
+			{
+				for (int c = 0; c < BUFFSIZE; c++)
+				{
+					osc_left[c + i].y = osc_left[c + i + count*BUFFSIZE].y;
+					osc_right[c + i].y = osc_right[c + i + count*BUFFSIZE].y;
+				}
+			}
+		}
+		for (int a = 0; i < OSC_NUMPOINTS; i+= BUFFSIZE)
+		{
+			for (int c = 0; c < BUFFSIZE; c++)
+			{
+				osc_left[c + i].y = pcm[a + c].l;
+				osc_right[c + i].y = pcm[a + c].r;
+			}
+			a += BUFFSIZE;
+		}
+		
+		glBindBuffer(GL_ARRAY_BUFFER, vbo_left);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(osc_left), osc_left);
+		
+		glBindBuffer(GL_ARRAY_BUFFER, vbo_right);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(osc_right), osc_right);
 
-
-	//GLuint left_vbo, right_vbo;
+		gtk_widget_queue_draw(widget);
+	}
+	return 1;
 }
-
-gboolean repainter(GtkWidget *widget)
-{
-	return true;
-}
-*/

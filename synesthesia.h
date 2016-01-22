@@ -9,6 +9,7 @@
 #ifdef HAVE_PULSE
 #include "pulse-backend.h"
 #endif
+
 void activate(GtkApplication *app, gulong *sig_id);
 void fftw_init();
 void refresh_devices(gpointer app);

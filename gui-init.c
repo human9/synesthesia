@@ -34,6 +34,7 @@ static void about(GSimpleAction *action,
 		"license-type", GTK_LICENSE_GPL_3_0, "version", version_string,
 		"comments", "Synesthesia is a general purpose audio visualiser.", NULL);
 }
+
 static void fullscreen_mode()
 {
 

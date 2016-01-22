@@ -1,8 +1,14 @@
 #include <string.h>
 #include <pulse/simple.h>
-#define BUFFSIZE 4
 #include "synesthesia.h"
 #include "pulse-backend.h"
+#include <string.h>
+
+pcmframe temp_buffer[OSC_NUMPOINTS];
+pcmframe export_buffer[OSC_NUMPOINTS];
+
+int chunks = 0;
+int clearbuff = 0;
 
 void state_callback(pa_context *c, void *data)
 {
@@ -116,14 +122,26 @@ gpointer pulse_input(gpointer data)
 		&attr,
 		NULL
 	);
-	struct pcmframe buffer[BUFFSIZE/4];
 
 	connected = 1;
-	while(connected)
+
+	int error;
+	pcmframe pa_buffer[BUFFSIZE*4];
+	while (connected)
 	{
-		if (pa_simple_read(s, &buffer, BUFFSIZE, NULL) < 0)
-			g_print("Input has failed\n");
+		// our pcm is 2 channels, each channel = short int
+		if (pa_simple_read(s, pa_buffer, BUFFSIZE*sizeof(short)*2, &error) < 0)
+			g_print("PulseAudio error: %s\n", pa_strerror(error));
 		
+		memcpy(temp_buffer + chunks*BUFFSIZE, pa_buffer, BUFFSIZE*sizeof(short)*2);
+		
+		if (chunks * BUFFSIZE < OSC_NUMPOINTS - BUFFSIZE)
+			chunks++;
+		else
+		{
+			chunks = 0;
+			clearbuff = 1;
+		}
 	}
 
 	pa_simple_free(s);
@@ -141,3 +159,15 @@ void disconnect()
 	connected = 0;
 }
 
+pcmframe * getbuffer(int *count, int *clear)
+{
+	if (connected)
+	{
+		*count = chunks;
+		*clear = clearbuff;
+		memcpy(export_buffer, temp_buffer, OSC_NUMPOINTS*sizeof(short)*2);
+		return export_buffer;
+	}
+	else
+		return NULL;
+}
