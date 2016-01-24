@@ -2,7 +2,6 @@
 #define PULSE_BACKEND_H
 
 #include <pulse/pulseaudio.h>
-#define BUFFSIZE 64
 
 typedef struct pa_devicelist {
     uint8_t initialized;
@@ -11,18 +10,10 @@ typedef struct pa_devicelist {
     char description[256];
 } pa_devicelist_t;
 
-struct pcmframe
-{
-	short l;
-	short r;
-};
-
-typedef struct pcmframe pcmframe;
-
 int get_pulse_devices(pa_devicelist_t **sources);
 gpointer pulse_input(gpointer data);
-void disconnect();
-pcmframe *getbuffer(int *count, int *clear);
-int connection_active();
+void pulse_disconnect();
+pcmframe *pulse_getbuffer(int *count, int *clear);
+int pulse_connection_active();
 
 #endif

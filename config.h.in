@@ -4,6 +4,9 @@
 #undef COMPILED_WITH
 
 /* Use PulseAudio */
+#undef HAVE_PORTAUDIO
+
+/* Use PulseAudio */
 #undef HAVE_PULSE
 
 /* Name of package */

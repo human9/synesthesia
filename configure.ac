@@ -18,6 +18,11 @@ if test "x${have_pulse}" = "xtrue" ; then
 	AC_DEFINE([HAVE_PULSE], [1], [Use PulseAudio])
 	AC_SUBST([PULSE_FILE], ["pulse-input.c"])
 fi
+PKG_CHECK_MODULES(PORTAUDIO, portaudio-2.0, have_port=true, have_port=false)
+if test "x${have_port}" = "xtrue" ; then
+	AC_DEFINE([HAVE_PORTAUDIO], [1], [Use PulseAudio])
+	AC_SUBST([PORT_FILE], ["port-input.c"])
+fi
 mingw="mingw"
 if test "${CC#*$mingw}" != "$CC"; then
 	AC_SUBST([EXE],[".exe"])

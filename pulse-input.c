@@ -1,14 +1,15 @@
 #include <string.h>
 #include <pulse/simple.h>
+#include <string.h>
 #include "synesthesia.h"
 #include "pulse-input.h"
-#include <string.h>
 
-pcmframe temp_buffer[OSC_NUMPOINTS];
-pcmframe export_buffer[OSC_NUMPOINTS];
+static pcmframe temp_buffer[OSC_NUMPOINTS];
+static pcmframe export_buffer[OSC_NUMPOINTS];
 
-int chunks = 0;
-int clearbuff = 0;
+static int connected = 0;
+static int chunks = 0;
+static int clearbuff = 0;
 
 void state_callback(pa_context *c, void *data)
 {
@@ -99,8 +100,6 @@ int get_pulse_devices(pa_devicelist_t **sources)
 	}
 }
 
-int connected = 0;
-
 gpointer pulse_input(gpointer data)
 {
 	pa_simple *s;
@@ -124,6 +123,8 @@ gpointer pulse_input(gpointer data)
 	);
 
 	connected = 1;
+	chunks = 0;
+	clearbuff = 0;
 
 	int error;
 	pcmframe pa_buffer[BUFFSIZE*4];
@@ -149,17 +150,17 @@ gpointer pulse_input(gpointer data)
 	return 0;
 }
 
-int connection_active()
+int pulse_connection_active()
 {
 	return connected;
 }
 
-void disconnect()
+void pulse_disconnect()
 {
 	connected = 0;
 }
 
-pcmframe * getbuffer(int *count, int *clear)
+pcmframe * pulse_getbuffer(int *count, int *clear)
 {
 	if (connected)
 	{

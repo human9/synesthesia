@@ -89,6 +89,7 @@ GLint get_uniform(GLuint program, const char *name)
 gboolean glarea_init(GtkGLArea *area)
 {
 	gtk_widget_add_tick_callback(GTK_WIDGET(area), (GtkTickCallback)repainter, NULL, NULL);
+	
 	gtk_gl_area_make_current(GTK_GL_AREA(area));
 	if (gtk_gl_area_get_error(GTK_GL_AREA(area)) != NULL)
 	{
@@ -105,14 +106,12 @@ gboolean glarea_init(GtkGLArea *area)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	
 	
-	GLfloat x_points[OSC_NUMPOINTS];
 	for (int i = 0; i < OSC_NUMPOINTS; i++)
 	{
 		osc_left[i].x = i;
 		osc_left[i].y = 0;
 		osc_right[i].x = i; 
 		osc_right[i].y = 0;
-		x_points[i] = ((float)i-OSC_NUMPOINTS/2.0)/(OSC_NUMPOINTS/2.0);
 	}
 	
 	glGenBuffers(1, &vbo_left);
@@ -182,9 +181,10 @@ gboolean glarea_render(GtkGLArea *area)
 pcmframe *pcm;
 int count, clear;
 
+extern pcmframe *(*getbuffer_ptr)(int *count, int *clear);
 static gboolean repainter(GtkWidget *widget)
 {
-	if ((pcm = getbuffer(&count, &clear)) != NULL)
+	if ((pcm = getbuffer_ptr(&count, &clear)) != NULL)
 	{
 		int i;
 		if (clear)

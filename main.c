@@ -2,6 +2,7 @@
 
 int main(int argc, char *argv[])
 {
+	
 	g_print("Synesthesia version %s\n\n", VERSION);
 
 	fftw_init();

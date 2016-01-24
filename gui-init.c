@@ -1,5 +1,6 @@
-#include "gui-init.h"
+#include <string.h>
 #include "synesthesia.h"
+#include "gui-init.h"
 
 static void check_alpha(GtkWidget *widget)
 {
@@ -54,19 +55,70 @@ static void state_change(GSimpleAction *action,
 
 GThread *input_thread;
 const char *device_name;
-#ifdef HAVE_PULSE
-static void pulse_input_swap(GSimpleAction *action,
+#ifdef HAVE_PORTAUDIO
+
+static int (*connection_active_ptr)(void) = NULL;
+static void (*disconnect_ptr)(void) = NULL;
+static gpointer (*input_ptr)(gpointer data) = NULL;
+pcmframe *(*getbuffer_ptr)(int *count, int *clear) = port_getbuffer;
+
+static void input_swap(GSimpleAction *action,
 	GVariant *variant, gpointer app)
 {
 	device_name = g_variant_get_string(variant, NULL);
+	const gchar *api_name = g_action_get_name(G_ACTION(action));
+	
+	if (connection_active_ptr == NULL)
+	{
+		#ifdef HAVE_PULSE
+		if (strcmp(api_name, "pulse") == 0)
+		{
+			connection_active_ptr = pulse_connection_active;
+			disconnect_ptr = pulse_disconnect;
+			input_ptr = pulse_input;
+			getbuffer_ptr = pulse_getbuffer;
+		}
+		#endif
+		#ifdef HAVE_PORTAUDIO
+		if (strcmp(api_name, "port") == 0)
+		{
+			connection_active_ptr = port_connection_active;
+			disconnect_ptr = port_disconnect;
+			input_ptr = port_input;
+			getbuffer_ptr = port_getbuffer;
+		}
+		#endif
+
+	}
+
 	g_print("Connecting to %s\n", device_name);
 
-	if(connection_active())
+	if(connection_active_ptr())
 	{
-		disconnect();
+		disconnect_ptr();
 		g_thread_join(input_thread);
 	}
-	input_thread = g_thread_new("input_thread", pulse_input, (void *)device_name);
+	
+	#ifdef HAVE_PULSE
+	if (strcmp(api_name, "pulse") == 0)
+	{
+		connection_active_ptr = pulse_connection_active;
+		disconnect_ptr = pulse_disconnect;
+		input_ptr = pulse_input;
+		getbuffer_ptr = pulse_getbuffer;
+	}
+	#endif
+	#ifdef HAVE_PORTAUDIO
+	if (strcmp(api_name, "port") == 0)
+	{
+		connection_active_ptr = port_connection_active;
+		disconnect_ptr = port_disconnect;
+		input_ptr = port_input;
+		getbuffer_ptr = port_getbuffer;
+	}
+	#endif
+	
+	input_thread = g_thread_new("input_thread", input_ptr, (void *)device_name);
 
 	g_simple_action_set_state(action, variant);	
 }
@@ -79,7 +131,10 @@ static GActionEntry app_entries[] =
     { "fullscreen", fullscreen_mode, NULL, NULL, NULL, },
     { "refresh", refresh_action, NULL, NULL, NULL, },
 #ifdef HAVE_PULSE
-	{  "pulse", NULL, "s", "\"placeholder\"", pulse_input_swap, },
+	{  "pulse", NULL, "s", "\"noinput\"", input_swap, },
+#endif
+#ifdef HAVE_PORTAUDIO
+	{  "port", NULL, "s", "\"noinput\"", input_swap, },
 #endif
 	{  "mode", NULL, "s", "\"oscilloscope\"", state_change, }
 };
@@ -92,6 +147,9 @@ void gui_init(GtkApplication *app)
 	gtk_builder_add_callback_symbol(builder, "glarea_init", G_CALLBACK(glarea_init));
 	gtk_builder_add_callback_symbol(builder, "glarea_render", G_CALLBACK(glarea_render));
     gtk_builder_connect_signals(builder, NULL);
+
+	gtk_gl_area_set_required_version(GTK_GL_AREA(gtk_builder_get_object(
+		builder, "glarea")), 3, 2);
 
     // get css from resource
 	GtkCssProvider *provider = gtk_css_provider_new();

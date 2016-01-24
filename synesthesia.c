@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <fftw3.h>
 #include "synesthesia.h"
 
@@ -16,6 +17,7 @@ void fftw_init()
 
 void activate(GtkApplication *app, gulong *sig_id)
 {
+	port_init();
 	gui_init(app);
 	refresh_devices(app);
 }
@@ -42,9 +44,29 @@ void refresh_devices(gpointer app)
 		num_found++;
 	}
 	// Insert the devices we got
-	g_menu_append_submenu(device_menu, "Pulse", G_MENU_MODEL(device));
+	g_menu_append_submenu(device_menu, "PulseAudio", G_MENU_MODEL(device));
 
 	#endif
+
+	#ifdef HAVE_PORTAUDIO
+
+	GMenu *portdevice = g_menu_new();
+
+	const PaDeviceInfo **deviceList;
+	int deviceNum = get_port_devices(&deviceList);
+	for(int i = 0; i < deviceNum; i++)
+	{
+		gchar action_string[526];
+		sprintf(action_string, "app.port::%s", deviceList[i]->name);
+		g_menu_append(portdevice, deviceList[i]->name, action_string);
+		num_found++;
+	}
+	free(deviceList);
+	// Insert the devices we got
+	g_menu_append_submenu(device_menu, "PortAudio", G_MENU_MODEL(portdevice));
+
+	#endif
+
 	if (num_found > 0)
 		g_print("%d devices found.\n", num_found);
 	else
