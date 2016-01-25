@@ -184,7 +184,7 @@ int count, clear;
 extern pcmframe *(*getbuffer_ptr)(int *count, int *clear);
 static gboolean repainter(GtkWidget *widget)
 {
-	if ((pcm = getbuffer_ptr(&count, &clear)) != NULL)
+	if (getbuffer_ptr != NULL && (pcm = getbuffer_ptr(&count, &clear)) != NULL)
 	{
 		int i;
 		if (clear)

@@ -15,8 +15,10 @@ You can customise visualisations easily with GLSL!
 
 ====[ COMPILING/RUNNING ]====
 
-Requires pulseaudio, FFTW3, GTK3+ (at least 3.16) and epoxy.
+Requires FFTW3, GTK3+ (at least 3.16) and epoxy.
 Just ./configure, make and run.
+If PortAudio or PulseAudio libs are found support will be compiled for them.
+To disable this, use --disable-pulse or --disable-port when running configure.
 
 
 ====[ TODO ]====

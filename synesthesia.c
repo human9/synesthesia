@@ -17,7 +17,9 @@ void fftw_init()
 
 void activate(GtkApplication *app, gulong *sig_id)
 {
+	#ifdef HAVE_PORTAUDIO
 	port_init();
+	#endif
 	gui_init(app);
 	refresh_devices(app);
 }
@@ -58,10 +60,11 @@ void refresh_devices(gpointer app)
 	{
 		gchar action_string[526];
 		sprintf(action_string, "app.port::%s", deviceList[i]->name);
+		//printf("%s\n", deviceList[i]->name);
 		g_menu_append(portdevice, deviceList[i]->name, action_string);
 		num_found++;
 	}
-	free(deviceList);
+	//free(deviceList);
 	// Insert the devices we got
 	g_menu_append_submenu(device_menu, "PortAudio", G_MENU_MODEL(portdevice));
 

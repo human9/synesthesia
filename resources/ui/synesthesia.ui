@@ -50,6 +50,7 @@
   </menu>
   
   <object class="GtkApplicationWindow" id="SynesthesiaWindow">
+	<signal name="delete-event" handler="quit_app"/>
     <property name="can_focus">False</property>
     <property name="border_width">0</property>
     <property name="default_width">600</property>

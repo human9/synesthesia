@@ -695,6 +695,8 @@ ac_user_opts='
 enable_option_checking
 enable_silent_rules
 enable_dependency_tracking
+enable_pulse
+enable_port
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1339,6 +1341,8 @@ Optional Features:
                           do not reject slow dependency extractors
   --disable-dependency-tracking
                           speeds up one-time build
+  --disable-pulse         Disable PulseAudio backend
+  --disable-port          Disable PortAudio backend
 
 Some influential environment variables:
   CC          C compiler command
@@ -4059,6 +4063,14 @@ $as_echo "yes" >&6; }
 
 fi
 
+# Check whether --enable-pulse was given.
+if test "${enable_pulse+set}" = set; then :
+  enableval=$enable_pulse;
+fi
+
+if test "x$enable_pulse" != "xno"; then :
+
+
 pkg_failed=no
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for PULSEAUDIO" >&5
 $as_echo_n "checking for PULSEAUDIO... " >&6; }
@@ -4129,13 +4141,23 @@ else
 $as_echo "yes" >&6; }
 	have_pulse=true
 fi
-if test "x${have_pulse}" = "xtrue" ; then
+	if test "x${have_pulse}" = "xtrue" ; then
 
 $as_echo "#define HAVE_PULSE 1" >>confdefs.h
 
-	PULSE_FILE="pulse-input.c"
+		PULSE_FILE="pulse-input.c"
+
+	fi
 
 fi
+
+# Check whether --enable-port was given.
+if test "${enable_port+set}" = set; then :
+  enableval=$enable_port;
+fi
+
+if test "x$enable_port" != "xno"; then :
+
 
 pkg_failed=no
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for PORTAUDIO" >&5
@@ -4207,13 +4229,16 @@ else
 $as_echo "yes" >&6; }
 	have_port=true
 fi
-if test "x${have_port}" = "xtrue" ; then
+	if test "x${have_port}" = "xtrue" ; then
 
 $as_echo "#define HAVE_PORTAUDIO 1" >>confdefs.h
 
-	PORT_FILE="port-input.c"
+		PORT_FILE="port-input.c"
+
+	fi
 
 fi
+
 mingw="mingw"
 if test "${CC#*$mingw}" != "$CC"; then
 	EXE=".exe"

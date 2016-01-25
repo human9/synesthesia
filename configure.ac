@@ -13,16 +13,27 @@ PKG_CHECK_MODULES(GTK3, gtk+-3.0 >= 3.16)
 PKG_CHECK_MODULES(EPOXY, epoxy)
 PKG_CHECK_MODULES(FFTW3, fftw3)
 PKG_CHECK_MODULES(XML, libxml-2.0)
-PKG_CHECK_MODULES(PULSEAUDIO, libpulse-simple, have_pulse=true, have_pulse=false)
-if test "x${have_pulse}" = "xtrue" ; then
-	AC_DEFINE([HAVE_PULSE], [1], [Use PulseAudio])
-	AC_SUBST([PULSE_FILE], ["pulse-input.c"])
-fi
-PKG_CHECK_MODULES(PORTAUDIO, portaudio-2.0, have_port=true, have_port=false)
-if test "x${have_port}" = "xtrue" ; then
-	AC_DEFINE([HAVE_PORTAUDIO], [1], [Use PulseAudio])
-	AC_SUBST([PORT_FILE], ["port-input.c"])
-fi
+
+AC_ARG_ENABLE([pulse],
+	AS_HELP_STRING([--disable-pulse], [Disable PulseAudio backend]))
+AS_IF([test "x$enable_pulse" != "xno"], [
+	PKG_CHECK_MODULES(PULSEAUDIO, libpulse-simple, have_pulse=true, have_pulse=false)
+	if test "x${have_pulse}" = "xtrue" ; then
+		AC_DEFINE([HAVE_PULSE], [1], [Use PulseAudio])
+		AC_SUBST([PULSE_FILE], ["pulse-input.c"])
+	fi
+])
+
+AC_ARG_ENABLE([port],
+	AS_HELP_STRING([--disable-port], [Disable PortAudio backend]))
+AS_IF([test "x$enable_port" != "xno"], [
+	PKG_CHECK_MODULES(PORTAUDIO, portaudio-2.0, have_port=true, have_port=false)
+	if test "x${have_port}" = "xtrue" ; then
+		AC_DEFINE([HAVE_PORTAUDIO], [1], [Use PulseAudio])
+		AC_SUBST([PORT_FILE], ["port-input.c"])
+	fi
+])
+
 mingw="mingw"
 if test "${CC#*$mingw}" != "$CC"; then
 	AC_SUBST([EXE],[".exe"])

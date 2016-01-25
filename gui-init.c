@@ -18,9 +18,27 @@ static void check_alpha(GtkWidget *widget)
 	gtk_widget_set_visual(widget, visual);
 }
 
+static void (*disconnect_ptr)(void) = NULL;
+static void quit_app_callback(GtkApplicationWindow *window)
+{
+	GtkApplication *app = gtk_window_get_application(GTK_WINDOW(window));
+	#ifdef HAVE_PORTAUDIO
+	if (disconnect_ptr != NULL)
+		disconnect_ptr();
+	#endif
+
+	g_application_quit(G_APPLICATION(app));
+	
+}
+
 static void quit_app(GSimpleAction *action,
 	GVariant *parameter, gpointer app)
 {
+	#ifdef HAVE_PORTAUDIO
+	if (disconnect_ptr != NULL)
+		disconnect_ptr();
+	#endif
+
 	g_application_quit(G_APPLICATION(app));
 }
 
@@ -55,12 +73,10 @@ static void state_change(GSimpleAction *action,
 
 GThread *input_thread;
 const char *device_name;
-#ifdef HAVE_PORTAUDIO
 
 static int (*connection_active_ptr)(void) = NULL;
-static void (*disconnect_ptr)(void) = NULL;
 static gpointer (*input_ptr)(gpointer data) = NULL;
-pcmframe *(*getbuffer_ptr)(int *count, int *clear) = port_getbuffer;
+pcmframe *(*getbuffer_ptr)(int *count, int *clear) = NULL;
 
 static void input_swap(GSimpleAction *action,
 	GVariant *variant, gpointer app)
@@ -106,6 +122,7 @@ static void input_swap(GSimpleAction *action,
 		disconnect_ptr = pulse_disconnect;
 		input_ptr = pulse_input;
 		getbuffer_ptr = pulse_getbuffer;
+		input_thread = g_thread_new("input_thread", input_ptr, (void *)device_name);
 	}
 	#endif
 	#ifdef HAVE_PORTAUDIO
@@ -115,14 +132,13 @@ static void input_swap(GSimpleAction *action,
 		disconnect_ptr = port_disconnect;
 		input_ptr = port_input;
 		getbuffer_ptr = port_getbuffer;
+		input_ptr((void*)device_name);
 	}
 	#endif
-	
-	input_thread = g_thread_new("input_thread", input_ptr, (void *)device_name);
+		
 
 	g_simple_action_set_state(action, variant);	
 }
-#endif
 
 static GActionEntry app_entries[] =
 {
@@ -146,6 +162,7 @@ void gui_init(GtkApplication *app)
         "/ui/synesthesia.ui");
 	gtk_builder_add_callback_symbol(builder, "glarea_init", G_CALLBACK(glarea_init));
 	gtk_builder_add_callback_symbol(builder, "glarea_render", G_CALLBACK(glarea_render));
+	gtk_builder_add_callback_symbol(builder, "quit_app", G_CALLBACK(quit_app_callback));
     gtk_builder_connect_signals(builder, NULL);
 
 	gtk_gl_area_set_required_version(GTK_GL_AREA(gtk_builder_get_object(
