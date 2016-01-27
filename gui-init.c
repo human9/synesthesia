@@ -71,7 +71,7 @@ static void state_change(GSimpleAction *action,
 
 }
 
-GThread *input_thread;
+GThread *input_thread = NULL;
 const char *device_name;
 
 static int (*connection_active_ptr)(void) = NULL;
@@ -112,7 +112,8 @@ static void input_swap(GSimpleAction *action,
 	if(connection_active_ptr())
 	{
 		disconnect_ptr();
-		g_thread_join(input_thread);
+		if (input_thread != NULL)
+			g_thread_join(input_thread);
 	}
 	
 	#ifdef HAVE_PULSE
