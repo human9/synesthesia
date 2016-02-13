@@ -12,6 +12,8 @@ struct point {
 struct point osc_left[OSC_NUMPOINTS];
 struct point osc_right[OSC_NUMPOINTS];
 
+extern float opacity;
+
 GLuint compile_shader(const char* src, GLenum type)
 {
 	GLuint shader = glCreateShader(type);
@@ -139,7 +141,8 @@ gboolean glarea_init(GtkGLArea *area)
 
 gboolean glarea_render(GtkGLArea *area)
 {
-	glClearColor(0, 0, 0, 0.7);
+	
+	glClearColor(0, 0, 0, opacity);
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	glUseProgram(program);

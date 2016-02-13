@@ -9,6 +9,16 @@
         <attribute name="action">app.fullscreen</attribute>
         <attribute name="accel">&lt;f&gt;f</attribute>
       </item>
+      <item>
+        <attribute name="label" translatable="yes">_Preferences</attribute>
+        <attribute name="action">app.preferences</attribute>
+        <attribute name="accel">&lt;Primary&gt;p</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">_Hide menubar</attribute>
+        <attribute name="action">app.menubar</attribute>
+        <attribute name="accel">&lt;Primary&gt;m</attribute>
+      </item>
 	  </section>
 	  <section>
 	  <item>

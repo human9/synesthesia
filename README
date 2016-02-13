@@ -23,6 +23,8 @@ To disable this, use --disable-pulse or --disable-port when running configure.
 
 ====[ TODO ]====
 
+-Maybe just uploading the buffers and a fullscreen quad to do pixel shading
+would be better
 -Make HUD mode use the maximize function rather than fullscreen as fullscreen
 often leads to problems on certain wms.
 -Sub data more efficiently - don't upload entire array in spec if not greater than
