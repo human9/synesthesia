@@ -119,12 +119,12 @@ gboolean glarea_init(GtkGLArea *area)
 	glGenBuffers(1, &vbo_left);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo_left);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(osc_left),
-		osc_left, GL_DYNAMIC_DRAW);
+		osc_left, GL_STREAM_DRAW);
 
 	glGenBuffers(1, &vbo_right);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo_right);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(osc_right),
-		osc_right, GL_DYNAMIC_DRAW);
+		osc_right, GL_STREAM_DRAW);
 	
 	if (!gen_program())
 		return false;

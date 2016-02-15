@@ -3,6 +3,6 @@
 
 #include <gtk/gtk.h>
 
-void gui_init(GtkApplication *app);
+void gui_init(GtkApplication *app, gulong *sig_id);
 
 #endif

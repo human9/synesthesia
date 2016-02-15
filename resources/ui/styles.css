@@ -5,3 +5,11 @@ GtkApplicationWindow {
 GtkMenuBar {
 	background-color: @theme_bg_color;
 }
+
+GtkStackSwitcher GtkButton {
+	padding: 10px;
+}
+
+GtkStackSwitcher {
+	background-color: darker(@theme_bg_color);
+}

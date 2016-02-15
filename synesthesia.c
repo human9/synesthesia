@@ -20,7 +20,7 @@ void activate(GtkApplication *app, gulong *sig_id)
 	#ifdef HAVE_PORTAUDIO
 	port_init();
 	#endif
-	gui_init(app);
+	gui_init(app, sig_id);
 	refresh_devices(app);
 }
 

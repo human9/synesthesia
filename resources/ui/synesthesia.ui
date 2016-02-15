@@ -60,17 +60,20 @@
   </menu>
   
   <object class="GtkApplicationWindow" id="SynesthesiaWindow">
+	<property name="events">GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
 	<signal name="delete-event" handler="quit_app"/>
-    <property name="can_focus">False</property>
+	<property name="title">Synesthesia</property>
+    <property name="visible">False</property>
+    <property name="can_focus">True</property>
     <property name="border_width">0</property>
     <property name="default_width">600</property>
     <property name="default_height">400</property>
     <child>
-      <object class="GtkBox" id="main_box">
-        <property name="visible">True</property>
+      <object class="GtkEventBox" id="main_box">
+		<signal name="button-press-event" handler="button_event"/> 
+		<signal name="button-release-event" handler="button_event"/> 
+        <property name="visible">False</property>
         <property name="can_focus">False</property>
-        <property name="orientation">vertical</property>
-        <property name="spacing">0</property>
         <child>
 		  <object class="GtkGLArea" id="glarea">
 			<signal name="realize" handler="glarea_init"/>

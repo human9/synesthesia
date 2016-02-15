@@ -5,6 +5,8 @@
 #define ACTION_PARAMETERS GSimpleAction *action, GVariant *variant, gpointer app
 
 float opacity = 1;
+gint fullscreen_state = -1;
+gint cursor_autohide;
 GtkWidget *preferences; // preferences dialog
 const char *device_name;
 GAction *old_action = NULL;
@@ -15,7 +17,10 @@ static gpointer (*input_ptr)(gpointer data) = NULL;
 pcmframe *(*getbuffer_ptr)(int *count, int *clear) = NULL;
 
 // function prototypes, mostly action handlers
-static void opacity_change(GtkScale *scale);
+gboolean button_event(GtkWidget *widget, GdkEventButton *event);
+gboolean window_state_event(GtkWidget *window, GdkEventWindowState *event, gpointer sig_id);
+static int mouse_over(GtkWidget *window);
+static void opacity_change(GtkSpinButton *spinbutton);
 static void input_swap(ACTION_PARAMETERS);
 static void about(ACTION_PARAMETERS);
 static void fullscreen_mode();
@@ -24,6 +29,7 @@ static void quit_app_callback(GtkApplicationWindow *window);
 static void check_alpha(GtkWidget *widget);
 static void preferences_window(ACTION_PARAMETERS);
 static void toggle_menubar(ACTION_PARAMETERS);
+static void toggle_cursor(GtkWidget *widget);
 static void refresh_action(ACTION_PARAMETERS);
 static void state_change(ACTION_PARAMETERS);
 static void hide_prefs(ACTION_PARAMETERS);
@@ -45,7 +51,7 @@ static GActionEntry app_entries[] =
 	{  "mode", NULL, "s", "\"oscilloscope\"", state_change, }
 };
 
-void gui_init(GtkApplication *app)
+void gui_init(GtkApplication *app, gulong *sig_id)
 {
 	// get the gui layout and signals from resource
     GtkBuilder *builder = gtk_builder_new_from_resource(
@@ -53,23 +59,26 @@ void gui_init(GtkApplication *app)
 	gtk_builder_add_callback_symbol(builder, "glarea_init", G_CALLBACK(glarea_init));
 	gtk_builder_add_callback_symbol(builder, "glarea_render", G_CALLBACK(glarea_render));
 	gtk_builder_add_callback_symbol(builder, "quit_app", G_CALLBACK(quit_app_callback));
+	gtk_builder_add_callback_symbol(builder, "button_event", G_CALLBACK(button_event));
+	gtk_builder_add_callback_symbol(builder, "window_state_event", G_CALLBACK(window_state_event));
     gtk_builder_connect_signals(builder, NULL);
 
 	GtkBuilder *prefs = gtk_builder_new_from_resource("/ui/preferences.ui");
 	gtk_builder_add_callback_symbol(prefs, "opacity_change", G_CALLBACK(opacity_change));
 	gtk_builder_add_callback_symbol(prefs, "hide_prefs", G_CALLBACK(hide_prefs));
+	gtk_builder_add_callback_symbol(prefs, "toggle_cursor", G_CALLBACK(toggle_cursor));
     gtk_builder_connect_signals(prefs, NULL);
 	preferences = GTK_WIDGET(gtk_builder_get_object(prefs, "Preferences"));
 	GSettings *settings = g_settings_new("com.coptinet.synesthesia");
 	g_settings_bind (settings, "transparency", gtk_builder_get_object(prefs, "simple_scale"), "value",  G_SETTINGS_BIND_DEFAULT);
-	GtkCheckButton *chkbutton = GTK_CHECK_BUTTON(gtk_builder_get_object(prefs, "menucheck"));
-	g_settings_bind (settings, "menus", chkbutton, "active", G_SETTINGS_BIND_DEFAULT);
+	GtkCheckButton *menucheck = GTK_CHECK_BUTTON(gtk_builder_get_object(prefs, "menucheck"));
+	GtkCheckButton *cursorcheck = GTK_CHECK_BUTTON(gtk_builder_get_object(prefs, "cursorcheck"));
+	g_settings_bind (settings, "menus", menucheck, "active", G_SETTINGS_BIND_DEFAULT);
+	g_settings_bind (settings, "cursorhide", cursorcheck, "active", G_SETTINGS_BIND_DEFAULT);
 
-	opacity = gtk_range_get_value(GTK_RANGE(gtk_builder_get_object(prefs, "Transparency")));
-	gtk_gl_area_set_required_version(GTK_GL_AREA(gtk_builder_get_object(
-		builder, "glarea")), 3, 2);
-
-    // get css from resource
+	opacity = gtk_spin_button_get_value(GTK_SPIN_BUTTON(gtk_builder_get_object(prefs, "Transparency")));
+    
+	// get css from resource
 	GtkCssProvider *provider = gtk_css_provider_new();
     gtk_css_provider_load_from_resource(provider, "/ui/styles.css");
     gtk_style_context_add_provider_for_screen(gdk_screen_get_default(),
@@ -85,11 +94,19 @@ void gui_init(GtkApplication *app)
 	check_alpha(window);
 	gtk_window_set_application(GTK_WINDOW(window), app);
 
+	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(cursorcheck)))
+		cursor_autohide = 1;
+	else
+		cursor_autohide = 0;
+	*sig_id = g_signal_connect(G_OBJECT(window), "motion-notify-event", G_CALLBACK(mouse_over), NULL);
+	g_signal_connect(G_OBJECT(window), "window-state-event", G_CALLBACK(window_state_event), sig_id);
+	g_signal_handler_block(G_OBJECT(window), *sig_id);	
+
 	// set up menubar
 	gtk_application_set_menubar(app, G_MENU_MODEL (
 		gtk_builder_get_object(builder, "menubar")));
 
-	if (!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkbutton)))
+	if (!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(menucheck)))
         gtk_application_window_set_show_menubar(GTK_APPLICATION_WINDOW(window), false);
 	
 	// prefer dark theme
@@ -99,10 +116,8 @@ void gui_init(GtkApplication *app)
 	// default icon
 	gtk_window_set_default_icon (gdk_pixbuf_new_from_resource(
 		"/ui/logo.png", NULL));
-
-
+	
 	gtk_widget_show_all(window);
-
 }
 
 static void input_swap(ACTION_PARAMETERS)
@@ -183,6 +198,14 @@ static void toggle_menubar(ACTION_PARAMETERS)
 		gtk_application_window_set_show_menubar(appwindow, true);
 }
 
+static void toggle_cursor(GtkWidget *widget)
+{
+	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)))
+		cursor_autohide = 1;
+	else
+		cursor_autohide = 0;
+}
+
 static void preferences_window(ACTION_PARAMETERS)
 {
 	if (!gtk_window_is_active(GTK_WINDOW(preferences)))
@@ -197,10 +220,24 @@ static void hide_prefs(ACTION_PARAMETERS)
 	gtk_widget_hide(preferences);
 }
 
-static void fullscreen_mode()
+static void fullscreen_mode(ACTION_PARAMETERS)
 {
-
+	GtkWindow *window = gtk_application_get_active_window(app);
+	switch (fullscreen_state)
+	{
+		case -1:
+			gtk_window_fullscreen(window);
+			fullscreen_state = 1;
+			break;
+		case 0:
+			gtk_window_fullscreen(window);
+			break;
+		case 1:
+			gtk_window_unfullscreen(window);
+			break;
+	}
 }
+
 
 static void refresh_action(ACTION_PARAMETERS)
 {
@@ -212,9 +249,73 @@ static void state_change(ACTION_PARAMETERS)
 
 }
 
-static void opacity_change(GtkScale *scale)
+int timeout_exists = 0;
+guint timeout;
+
+int start_timeout(gpointer window)
 {
-	opacity = gtk_range_get_value(GTK_RANGE(scale));
+    if (fullscreen_state == 1)
+    {
+        GdkCursor *blankcursor = gdk_cursor_new_for_display(gdk_display_get_default(), GDK_BLANK_CURSOR);
+		if (cursor_autohide)
+        	gdk_window_set_cursor(gtk_widget_get_window(GTK_WIDGET(window)), blankcursor);
+    }
+    timeout_exists = 0;
+    return 0;
+
+}
+
+static int mouse_over(GtkWidget *window)
+{
+    if (timeout_exists)
+        g_source_remove(timeout);
+    timeout = g_timeout_add_seconds(1, start_timeout, window);
+    timeout_exists = 1;
+
+    gdk_window_set_cursor(gtk_widget_get_window(GTK_WIDGET(window)), NULL);
+
+    return 0;
+}
+
+
+gboolean window_state_event(GtkWidget *window, GdkEventWindowState *event, gpointer sig_id)
+{
+	if (event->changed_mask & GDK_WINDOW_STATE_FULLSCREEN)
+	{
+		if (event->new_window_state & GDK_WINDOW_STATE_FULLSCREEN)
+		{
+			fullscreen_state = 1;
+			GdkCursor *blankcursor = gdk_cursor_new_for_display(gdk_display_get_default(), GDK_BLANK_CURSOR);
+			if (cursor_autohide)
+				gdk_window_set_cursor(gtk_widget_get_window(GTK_WIDGET(window)), blankcursor);
+			g_signal_handler_unblock(G_OBJECT(window),*(gulong *)sig_id);
+		}
+		else
+		{
+			fullscreen_state = 0;
+			gdk_window_set_cursor(gtk_widget_get_window(GTK_WIDGET(window)), NULL);
+			g_signal_handler_block(G_OBJECT(window),*(gulong *)sig_id);
+		}
+	}
+}
+
+gboolean button_event(GtkWidget *widget, GdkEventButton *event)
+{
+	/*
+	gint x, y;
+	gdk_window_get_geometry(event->window, NULL, NULL, &x, &y);
+	g_print("(%dx%d)\nx:%lf y:%lf\n", x, y, event->x, event->y);	
+
+	
+	if (event->button == 3)
+		g_print("Right click\n");
+	*/
+	return true;
+}
+
+static void opacity_change(GtkSpinButton *spinbutton)
+{
+	opacity = gtk_spin_button_get_value(spinbutton);
 }
 
 static void check_alpha(GtkWidget *widget)

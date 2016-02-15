@@ -14,7 +14,7 @@ typedef struct
 pcmframe;
 
 #define BUFFSIZE 32
-#define OSC_NUMPOINTS 2048 
+#define OSC_NUMPOINTS 2048
 
 #ifdef HAVE_PULSE
 #include "pulse-input.h"
