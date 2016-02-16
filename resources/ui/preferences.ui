@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <object class="GtkAdjustment" id="simple_scale">
+	<property name="step_increment">0.05</property>
+    <property name="lower">0</property>
+    <property name="upper">1</property>
+    <property name="value">0</property>
+    <property name="page_increment">0.05</property>
+  </object>
+  <object class="GtkWindow" id="Preferences">
+    <signal name="delete-event" handler="hide_prefs"/>
+    <property name="title">Preferences</property>
+    <property name="default_width">400</property>
+    <property name="default_height">300</property>
+    <child>
+	  <object class="GtkBox" id="Prefbox">
+	    <property name="border_width">0</property>
+	    <property name="spacing">0</property>
+		<property name="orientation">horizontal</property>
+		<child>
+		  <object class="GtkStackSwitcher" id="switch">
+		    <property name="stack">stack</property>
+			<property name="orientation">vertical</property>
+		  </object>
+		</child>
+		
+		<child>
+		  <object class="GtkScrolledWindow" id="frame">
+		  <property name="hscrollbar-policy">GTK_POLICY_NEVER</property>
+	    	<property name="expand">true</property>
+		<child>
+		  <object class="GtkStack" id="stack">
+	    	<property name="border_width">10</property>
+		    <property name="visible-child">visual-prefs</property>	
+		    <property name="transition-type">GTK_STACK_TRANSITION_TYPE_CROSSFADE</property>
+			<child>  
+			  <object class="GtkGrid" id="visual-prefs">
+				<property name="column-spacing">4</property>
+				<property name="row-spacing">12</property>
+				
+				<child>
+				  <object class="GtkLabel">
+					<property name="label">Opacity</property>
+					<property name="halign">GTK_ALIGN_START</property>
+	    			<property name="hexpand">true</property>
+				  </object>
+				  <packing>
+				    <property name="left-attach">0</property>
+				    <property name="top-attach">0</property>
+				  </packing>
+				</child>
+				<child>
+				  <object class="GtkSpinButton" id="Transparency">
+    				<signal name="value-changed" handler="opacity_change"/>
+					<property name="adjustment">simple_scale</property>
+					<property name="digits">2</property>
+				  </object>
+				  <packing>
+				    <property name="left-attach">1</property>
+				    <property name="top-attach">0</property>
+				  </packing>
+				</child>
+				
+				<child>
+				  <object class="GtkLabel" id="menuchecklabel">
+				    <property name="label">Start with menubar visible</property>
+					<property name="halign">GTK_ALIGN_START</property>
+				  </object>
+				  <packing>
+				    <property name="left-attach">0</property>
+				    <property name="top-attach">1</property>
+				  </packing>
+				</child>
+				<child>
+				  <object class="GtkCheckButton" id="menucheck">
+				    <property name="active">true</property>
+					<property name="halign">GTK_ALIGN_END</property>
+				  </object>
+				  <packing>
+				    <property name="left-attach">1</property>
+				    <property name="top-attach">1</property>
+				  </packing>
+				</child>
+				<child>
+				  <object class="GtkLabel">
+				    <property name="label">Autohide cursor in fullscreen</property>
+					<property name="halign">GTK_ALIGN_START</property>
+				  </object>
+				  <packing>
+				    <property name="left-attach">0</property>
+				    <property name="top-attach">2</property>
+				  </packing>
+				</child>
+				<child>
+				  <object class="GtkCheckButton" id="cursorcheck">
+				    <signal name="toggled" handler="toggle_cursor"/>
+				    <property name="active">true</property>
+					<property name="halign">GTK_ALIGN_END</property>
+				  </object>
+				  <packing>
+				    <property name="left-attach">1</property>
+				    <property name="top-attach">2</property>
+				  </packing>
+				</child>
+			  </object>
+			  <packing>
+			    <property name="title">Interface</property>
+			    <property name="name">Interface</property>
+		      </packing>
+			</child>
+			<child>  
+			  <object class="GtkGrid" id="audio-prefs">
+				<property name="column-spacing">4</property>
+				<property name="row-spacing">12</property>
+				
+				<child>
+				  <object class="GtkLabel">
+					<property name="label">Input frequency</property>
+					<property name="halign">GTK_ALIGN_START</property>
+	    			<property name="hexpand">true</property>
+				  </object>
+				  <packing>
+				    <property name="left-attach">0</property>
+				    <property name="top-attach">0</property>
+				  </packing>
+				</child>
+				<child>
+				  <object class="GtkCheckButton">
+				    <property name="active">true</property>
+					<property name="halign">GTK_ALIGN_END</property>
+				  </object>
+				  <packing>
+				    <property name="left-attach">1</property>
+				    <property name="top-attach">0</property>
+				  </packing>
+				</child>
+				
+				<child>
+				  <object class="GtkLabel">
+				    <property name="label">Number of channels</property>
+					<property name="halign">GTK_ALIGN_START</property>
+				  </object>
+				  <packing>
+				    <property name="left-attach">0</property>
+				    <property name="top-attach">1</property>
+				  </packing>
+				</child>
+				<child>
+				  <object class="GtkCheckButton">
+				    <property name="active">true</property>
+					<property name="halign">GTK_ALIGN_END</property>
+				  </object>
+				  <packing>
+				    <property name="left-attach">1</property>
+				    <property name="top-attach">1</property>
+				  </packing>
+				</child>
+				<child>
+				  <object class="GtkLabel">
+				    <property name="label">Bit depth</property>
+					<property name="halign">GTK_ALIGN_START</property>
+				  </object>
+				  <packing>
+				    <property name="left-attach">0</property>
+				    <property name="top-attach">2</property>
+				  </packing>
+				</child>
+				<child>
+				  <object class="GtkCheckButton">
+				    <property name="active">true</property>
+					<property name="halign">GTK_ALIGN_END</property>
+				  </object>
+				  <packing>
+				    <property name="left-attach">1</property>
+				    <property name="top-attach">2</property>
+				  </packing>
+				</child>
+			  </object>
+			  <packing>
+			    <property name="title">Audio</property>
+			    <property name="name">Audio</property>
+		      </packing>
+			</child>
+		  
+		  
+		  </object>
+		</child>
+
+		  </object>
+		  </child>
+	  </object>
+    </child>
+  </object>
+</interface>

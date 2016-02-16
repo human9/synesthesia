@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+	<schema path="/ui/" id="com.coptinet.synesthesia">
+		<key name="transparency" type="d">
+			<default>0</default>
+			<summary>Transparency</summary>
+			<description>Background transparency of visualisation</description>
+		</key>
+		<key name="menus" type="b">
+			<default>true</default>
+			<summary>Menus</summary>
+			<description>Menus hidden or shown</description>
+		</key>
+		<key name="cursorhide" type="b">
+			<default>true</default>
+			<summary>Cursor</summary>
+			<description>Autohide cursor</description>
+		</key>
+	</schema>
+</schemalist>
