@@ -5,6 +5,10 @@ GLuint program, vbo_left, vbo_right, gl_vao;
 GLint attr_osc, uni_pos, uni_len; 
 static gboolean repainter(GtkWidget *widget);
 
+/*
+I like shorts!
+They're comfy and easy to glBufferSubData!
+*/
 struct point {
 	GLshort x;
 	GLshort y;
