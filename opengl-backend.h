@@ -2,9 +2,10 @@
 #define OPENGL_BACKEND_H
 
 #include <epoxy/gl.h>
-#include "synesthesia.h"
 
-gboolean glarea_render(GtkGLArea *area);
-gboolean glarea_init(GtkGLArea *area);
+GLuint compile_shader(const char* src, GLenum type);
+GLboolean gen_program(GLuint *program);
+GLint get_attrib(GLuint program, const char *name);
+GLint get_uniform(GLuint program, const char *name);
 
 #endif

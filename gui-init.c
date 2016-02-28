@@ -2,8 +2,6 @@
 #include "synesthesia.h"
 #include "gui-init.h"
 
-#define ACTION_PARAMETERS GSimpleAction *action, GVariant *variant, gpointer app
-
 float opacity = 1;
 gint fullscreen_state = -1;
 gint cursor_autohide;
@@ -53,6 +51,9 @@ static GActionEntry app_entries[] =
 
 void gui_init(GtkApplication *app, gulong *sig_id)
 {
+	// set rendering functions
+	glarea_render = glarea_render_oscilloscope;
+	
 	// get the gui layout and signals from resource
     GtkBuilder *builder = gtk_builder_new_from_resource(
         "/ui/synesthesia.ui");
@@ -115,7 +116,7 @@ void gui_init(GtkApplication *app, gulong *sig_id)
 
 	// default icon
 	gtk_window_set_default_icon (gdk_pixbuf_new_from_resource(
-		"/ui/logo.png", NULL));
+		"/ui/logo_small.png", NULL));
 	
 	gtk_widget_show_all(window);
 }
@@ -189,6 +190,26 @@ static void input_swap(ACTION_PARAMETERS)
 	old_action = G_ACTION(action);
 }
 
+static void state_change(ACTION_PARAMETERS)
+{
+	const char *mode = g_variant_get_string(variant, NULL);
+	g_print("Now in %s mode\n", mode);
+	
+	if (strcmp(mode, "spectrum") == 0)
+	{
+		g_print("spectum code here\n", mode);
+		
+	}
+	else
+	{
+		g_print("oscilloscope code here\n", mode);
+
+	}
+	
+	g_simple_action_set_state(action, variant);	
+	old_action = G_ACTION(action);
+}
+
 static void toggle_menubar(ACTION_PARAMETERS)
 {
 	GtkApplicationWindow *appwindow = GTK_APPLICATION_WINDOW(gtk_application_get_active_window(app));
@@ -242,11 +263,6 @@ static void fullscreen_mode(ACTION_PARAMETERS)
 static void refresh_action(ACTION_PARAMETERS)
 {
 	refresh_devices(app);
-}
-
-static void state_change(ACTION_PARAMETERS)
-{
-
 }
 
 int timeout_exists = 0;

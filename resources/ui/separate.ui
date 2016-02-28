@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <object class="GtkApplicationWindow" id="render-window">
+	<property name="title">render-window</property>
+    <property name="visible">False</property>
+  </object>
+</interface>

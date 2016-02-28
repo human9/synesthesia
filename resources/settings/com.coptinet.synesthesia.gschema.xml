@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
 	<schema path="/ui/" id="com.coptinet.synesthesia">
-		<key name="transparency" type="d">
-			<default>0</default>
-			<summary>Transparency</summary>
-			<description>Background transparency of visualisation</description>
+		<key name="opacity" type="d">
+			<default>1</default>
+			<summary>Opacity</summary>
+			<description>Background opacity of visualisation</description>
 		</key>
 		<key name="menus" type="b">
 			<default>true</default>

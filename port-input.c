@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "synesthesia.h"
+#include "synesthesia-app.h"
 #include "port-input.h" 
 
 static pcmframe temp_buffer[OSC_NUMPOINTS];

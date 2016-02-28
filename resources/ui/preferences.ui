@@ -7,19 +7,22 @@
     <property name="value">0</property>
     <property name="page_increment">0.05</property>
   </object>
-  <object class="GtkWindow" id="Preferences">
+  <template class="SynesthesiaAppPrefs" parent="GtkWindow">
     <signal name="delete-event" handler="hide_prefs"/>
     <property name="title">Preferences</property>
-    <property name="default_width">400</property>
+    <property name="visible">False</property>
+    <property name="default_width">450</property>
     <property name="default_height">300</property>
     <child>
 	  <object class="GtkBox" id="Prefbox">
 	    <property name="border_width">0</property>
 	    <property name="spacing">0</property>
 		<property name="orientation">horizontal</property>
+    	<property name="visible">True</property>
 		<child>
 		  <object class="GtkStackSwitcher" id="switch">
 		    <property name="stack">stack</property>
+    		<property name="visible">True</property>
 			<property name="orientation">vertical</property>
 		  </object>
 		</child>
@@ -28,20 +31,24 @@
 		  <object class="GtkScrolledWindow" id="frame">
 		  <property name="hscrollbar-policy">GTK_POLICY_NEVER</property>
 	    	<property name="expand">true</property>
+    		<property name="visible">True</property>
 		<child>
 		  <object class="GtkStack" id="stack">
-	    	<property name="border_width">10</property>
+	    	<property name="border_width">15</property>
 		    <property name="visible-child">visual-prefs</property>	
+    		<property name="visible">True</property>
 		    <property name="transition-type">GTK_STACK_TRANSITION_TYPE_CROSSFADE</property>
 			<child>  
 			  <object class="GtkGrid" id="visual-prefs">
 				<property name="column-spacing">4</property>
+    			<property name="visible">True</property>
 				<property name="row-spacing">12</property>
 				
 				<child>
 				  <object class="GtkLabel">
 					<property name="label">Opacity</property>
 					<property name="halign">GTK_ALIGN_START</property>
+    				<property name="visible">True</property>
 	    			<property name="hexpand">true</property>
 				  </object>
 				  <packing>
@@ -50,9 +57,9 @@
 				  </packing>
 				</child>
 				<child>
-				  <object class="GtkSpinButton" id="Transparency">
-    				<signal name="value-changed" handler="opacity_change"/>
+				  <object class="GtkSpinButton" id="opacityrange">
 					<property name="adjustment">simple_scale</property>
+    				<property name="visible">True</property>
 					<property name="digits">2</property>
 				  </object>
 				  <packing>
@@ -64,6 +71,7 @@
 				<child>
 				  <object class="GtkLabel" id="menuchecklabel">
 				    <property name="label">Start with menubar visible</property>
+    				<property name="visible">True</property>
 					<property name="halign">GTK_ALIGN_START</property>
 				  </object>
 				  <packing>
@@ -75,6 +83,7 @@
 				  <object class="GtkCheckButton" id="menucheck">
 				    <property name="active">true</property>
 					<property name="halign">GTK_ALIGN_END</property>
+    				<property name="visible">True</property>
 				  </object>
 				  <packing>
 				    <property name="left-attach">1</property>
@@ -84,6 +93,7 @@
 				<child>
 				  <object class="GtkLabel">
 				    <property name="label">Autohide cursor in fullscreen</property>
+    				<property name="visible">True</property>
 					<property name="halign">GTK_ALIGN_START</property>
 				  </object>
 				  <packing>
@@ -95,11 +105,24 @@
 				  <object class="GtkCheckButton" id="cursorcheck">
 				    <signal name="toggled" handler="toggle_cursor"/>
 				    <property name="active">true</property>
+    				<property name="visible">True</property>
 					<property name="halign">GTK_ALIGN_END</property>
 				  </object>
 				  <packing>
 				    <property name="left-attach">1</property>
 				    <property name="top-attach">2</property>
+				  </packing>
+				</child>
+				<child>
+				  <object class="GtkButton" id="exitbutton">
+				    <signal name="clicked" swapped="yes" object="SynesthesiaAppPrefs" handler="go_normal"/>
+					<property name="label">Return to normal window</property>
+    				<property name="visible">True</property>
+					<property name="halign">GTK_ALIGN_START</property>
+				  </object>
+				  <packing>
+				    <property name="left-attach">0</property>
+				    <property name="top-attach">3</property>
 				  </packing>
 				</child>
 			  </object>
@@ -111,11 +134,13 @@
 			<child>  
 			  <object class="GtkGrid" id="audio-prefs">
 				<property name="column-spacing">4</property>
+    			<property name="visible">True</property>
 				<property name="row-spacing">12</property>
 				
 				<child>
 				  <object class="GtkLabel">
 					<property name="label">Input frequency</property>
+    				<property name="visible">True</property>
 					<property name="halign">GTK_ALIGN_START</property>
 	    			<property name="hexpand">true</property>
 				  </object>
@@ -127,6 +152,7 @@
 				<child>
 				  <object class="GtkCheckButton">
 				    <property name="active">true</property>
+    				<property name="visible">True</property>
 					<property name="halign">GTK_ALIGN_END</property>
 				  </object>
 				  <packing>
@@ -137,6 +163,7 @@
 				
 				<child>
 				  <object class="GtkLabel">
+    				<property name="visible">True</property>
 				    <property name="label">Number of channels</property>
 					<property name="halign">GTK_ALIGN_START</property>
 				  </object>
@@ -147,6 +174,7 @@
 				</child>
 				<child>
 				  <object class="GtkCheckButton">
+    				<property name="visible">True</property>
 				    <property name="active">true</property>
 					<property name="halign">GTK_ALIGN_END</property>
 				  </object>
@@ -157,6 +185,7 @@
 				</child>
 				<child>
 				  <object class="GtkLabel">
+    				<property name="visible">True</property>
 				    <property name="label">Bit depth</property>
 					<property name="halign">GTK_ALIGN_START</property>
 				  </object>
@@ -167,6 +196,7 @@
 				</child>
 				<child>
 				  <object class="GtkCheckButton">
+    				<property name="visible">True</property>
 				    <property name="active">true</property>
 					<property name="halign">GTK_ALIGN_END</property>
 				  </object>
@@ -190,5 +220,5 @@
 		  </child>
 	  </object>
     </child>
-  </object>
+  </template>
 </interface>

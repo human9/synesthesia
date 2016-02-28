@@ -1,67 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <menu id="menubar">
-	<submenu>
-	  <attribute name="label">_File</attribute>
-	  <section>
-      <item>
-        <attribute name="label" translatable="yes">_Fullscreen</attribute>
-        <attribute name="action">app.fullscreen</attribute>
-        <attribute name="accel">&lt;f&gt;f</attribute>
-      </item>
-      <item>
-        <attribute name="label" translatable="yes">_Preferences</attribute>
-        <attribute name="action">app.preferences</attribute>
-        <attribute name="accel">&lt;Primary&gt;p</attribute>
-      </item>
-      <item>
-        <attribute name="label" translatable="yes">_Hide menubar</attribute>
-        <attribute name="action">app.menubar</attribute>
-        <attribute name="accel">&lt;Primary&gt;m</attribute>
-      </item>
-	  </section>
-	  <section>
-	  <item>
-        <attribute name="label" translatable="yes">_Quit</attribute>
-        <attribute name="action">app.quit</attribute>
-        <attribute name="accel">&lt;Primary&gt;q</attribute>
-      </item>
-	  </section>
-	</submenu>
-	<submenu>
-      <attribute name="label" translatable="yes">_Visualisation</attribute>
-      <item>
-        <attribute name="label" translatable="yes">Oscilloscope</attribute>
-        <attribute name="action">app.mode</attribute>
-        <attribute name="accel">&lt;o&gt;o</attribute>
-        <attribute name="target">oscilloscope</attribute>
-      </item>
-      <item>
-        <attribute name="label" translatable="yes">Spectrum</attribute>
-        <attribute name="action">app.mode</attribute>
-        <attribute name="accel">&lt;s&gt;s</attribute>
-        <attribute name="target">spectrum</attribute>
-      </item>
-    </submenu>
-	<submenu>
-	  <attribute name="label" translatable="yes">_Devices</attribute>
-	  <item>
-	    <attribute name="label" translatable="yes">Refresh</attribute>
-        <attribute name="action">app.refresh</attribute>
-	  </item>
-	</submenu>
-    <submenu>
-      <attribute name="label" translatable="yes">_Help</attribute>
-      <item>
-        <attribute name="label" translatable="yes">About</attribute>
-        <attribute name="action">app.about</attribute>
-      </item>
-    </submenu>
-  </menu>
-  
-  <object class="GtkApplicationWindow" id="SynesthesiaWindow">
-	<property name="events">GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+
+  <template class="SynesthesiaAppWindow" parent="GtkApplicationWindow">
+	<property name="events">GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK</property>
 	<signal name="delete-event" handler="quit_app"/>
+	<signal name="window-state-event" handler="window_state_event"/>
+	<signal name="motion-notify-event" handler="mouse_over"/>
 	<property name="title">Synesthesia</property>
     <property name="visible">False</property>
     <property name="can_focus">True</property>
@@ -72,12 +16,12 @@
       <object class="GtkEventBox" id="main_box">
 		<signal name="button-press-event" handler="button_event"/> 
 		<signal name="button-release-event" handler="button_event"/> 
-        <property name="visible">False</property>
+        <property name="visible">True</property>
         <property name="can_focus">False</property>
         <child>
 		  <object class="GtkGLArea" id="glarea">
-			<signal name="realize" handler="glarea_init"/>
-			<signal name="render" handler="glarea_render"/>
+			<signal name="realize" handler="glarea_init" object="SynesthesiaAppWindow" swapped="yes"/>
+			<signal name="render" handler="render_callback" object="SynesthesiaAppWindow" swapped="yes"/>
 			<property name="visible">True</property>
 			<property name="can_focus">False</property>
 			<property name="hexpand">True</property>
@@ -86,5 +30,6 @@
         </child>
       </object>
     </child>
-  </object>
+  </template>
+  
 </interface>

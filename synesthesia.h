@@ -6,13 +6,6 @@
 #include "gui-init.h" 
 #include "opengl-backend.h"
 
-typedef struct
-{
-	short l;
-	short r;
-}
-pcmframe;
-
 #define BUFFSIZE 32
 #define OSC_NUMPOINTS 2048 // Must be a multiple of BUFFSIZE!!!
 

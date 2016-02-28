@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+ 	
+	<menu id="menubar">
+	<submenu>
+	  <attribute name="label">_File</attribute>
+	  <section>
+      <item>
+        <attribute name="label" translatable="yes">_Open input...</attribute>
+        <attribute name="action">app.open</attribute>
+        <attribute name="accel">&lt;Primary&gt;o</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">_Fullscreen</attribute>
+        <attribute name="action">app.fullscreen</attribute>
+        <attribute name="accel">&lt;f&gt;f</attribute>
+      </item>
+	  <item>
+        <attribute name="label" translatable="yes">_Above mode</attribute>
+        <attribute name="action">app.above</attribute>
+        <attribute name="accel">&lt;Primary&gt;a</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">_Hide menubar</attribute>
+        <attribute name="action">app.menubar</attribute>
+        <attribute name="accel">&lt;Primary&gt;m</attribute>
+      </item>
+	  </section>
+	  <section>
+	  <item>
+        <attribute name="label" translatable="yes">_Quit</attribute>
+        <attribute name="action">app.quit</attribute>
+        <attribute name="accel">&lt;Primary&gt;q</attribute>
+      </item>
+	  </section>
+	</submenu>
+	<submenu>
+      <attribute name="label" translatable="yes">_Edit</attribute>
+	  <section>
+	  <item>
+        <attribute name="label" translatable="yes">Shaders...</attribute>
+        <attribute name="action">app.shaders</attribute>
+        <attribute name="accel">&lt;Primary&gt;e</attribute>
+	</item>
+	  </section>
+	  <section>
+      <item>
+        <attribute name="label" translatable="yes">_Preferences...</attribute>
+        <attribute name="action">app.preferences</attribute>
+        <attribute name="accel">&lt;Primary&gt;p</attribute>
+	</item>
+	</section>
+    </submenu>
+	<submenu>
+      <attribute name="label" translatable="yes">_Mode</attribute>
+      <item>
+        <attribute name="label" translatable="yes">Oscilloscope</attribute>
+        <attribute name="action">app.mode</attribute>
+        <attribute name="accel">&lt;o&gt;o</attribute>
+        <attribute name="target">oscilloscope</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Spectrum</attribute>
+        <attribute name="action">app.mode</attribute>
+        <attribute name="accel">&lt;s&gt;s</attribute>
+        <attribute name="target">spectrum</attribute>
+      </item>
+    </submenu>
+	<submenu>
+	  <attribute name="label" translatable="yes">_Devices</attribute>
+	  <item>
+	    <attribute name="label" translatable="yes">Refresh</attribute>
+        <attribute name="action">app.refresh</attribute>
+	  </item>
+	</submenu>
+    <submenu>
+      <attribute name="label" translatable="yes">_Help</attribute>
+      <item>
+        <attribute name="label" translatable="yes">About</attribute>
+        <attribute name="action">app.about</attribute>
+      </item>
+    </submenu>
+  </menu>
+  
+</interface>
