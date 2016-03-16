@@ -2,6 +2,7 @@
 #include "synesthesia-app.h"
 #include "synesthesia-app-window.h"
 #include "preferences.h"
+#include "shaders.h"
 
 #ifdef HAVE_PULSE
 #include "pulse-input.h"
@@ -31,6 +32,7 @@ static void quit_app(ACTION_PARAMETERS);
 static void about(ACTION_PARAMETERS);
 static void fullscreen_mode(ACTION_PARAMETERS);
 static void preferences_window(ACTION_PARAMETERS);
+static void shaders_window(ACTION_PARAMETERS);
 static void toggle_menubar(ACTION_PARAMETERS);
 static void refresh_action(ACTION_PARAMETERS);
 static void input_swap(ACTION_PARAMETERS);
@@ -45,6 +47,7 @@ struct _SynesthesiaApp
 	GtkWidget *window;
 
 	GtkWidget *preferences;
+	GtkWidget *shaders;
 
 	gint cursor_autohide;
 	const char *device_name;
@@ -70,6 +73,7 @@ static GActionEntry app_entries[] =
     { "fullscreen", fullscreen_mode, NULL, NULL, NULL, },
     { "above", above_all, NULL, NULL, NULL, },
     { "preferences", preferences_window, NULL, NULL, NULL, },
+    { "shaders", shaders_window, NULL, NULL, NULL, },
     { "menubar", toggle_menubar, NULL, NULL, NULL, },
     { "refresh", refresh_action, NULL, NULL, NULL, },
 #ifdef HAVE_PULSE
@@ -94,6 +98,10 @@ GtkWidget *synesthesia_app_get_window (SynesthesiaApp *self)
 GtkWidget *synesthesia_app_get_prefs (SynesthesiaApp *self)
 {
 	return self->preferences;
+}
+GtkWidget *synesthesia_app_get_shaders (SynesthesiaApp *self)
+{
+	return self->shaders;
 }
 
 static void quit_app(ACTION_PARAMETERS)
@@ -158,10 +166,24 @@ static void hide_prefs(ACTION_PARAMETERS)
 {
 	gtk_widget_hide(SYNESTHESIA_APP(app)->preferences);
 }
+static void hide_shaders(ACTION_PARAMETERS)
+{
+	gtk_widget_hide(SYNESTHESIA_APP(app)->shaders);
+}
 
 static void preferences_window(ACTION_PARAMETERS)
 {
 	gtk_window_present (GTK_WINDOW (SYNESTHESIA_APP(app)->preferences));
+	/*if (!gtk_window_is_active(GTK_WINDOW(preferences)))
+	{
+		gtk_window_present(GTK_WINDOW(preferences));
+	}
+	gtk_widget_show_all(preferences);*/
+}
+
+static void shaders_window(ACTION_PARAMETERS)
+{
+	gtk_window_present (GTK_WINDOW (SYNESTHESIA_APP(app)->shaders));
 	/*if (!gtk_window_is_active(GTK_WINDOW(preferences)))
 	{
 		gtk_window_present(GTK_WINDOW(preferences));
@@ -383,6 +405,8 @@ static void synesthesia_app_activate (GApplication *app)
 	
 	if (self->preferences == NULL)
 		self->preferences = GTK_WIDGET(synesthesia_app_prefs_new (SYNESTHESIA_APP_WINDOW (self->window)));
+	if (self->shaders == NULL)
+		self->shaders = GTK_WIDGET(synesthesia_app_shaders_new (SYNESTHESIA_APP_WINDOW (self->window)));
 
 	refresh_devices(app);
 	

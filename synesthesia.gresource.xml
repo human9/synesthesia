@@ -4,6 +4,7 @@
     <file preprocess="xml-stripblanks">ui/synesthesia.ui</file>
     <file preprocess="xml-stripblanks">ui/menu.ui</file>
     <file preprocess="xml-stripblanks">ui/preferences.ui</file>
+    <file preprocess="xml-stripblanks">ui/shaders.ui</file>
     <file preprocess="xml-stripblanks">ui/separate.ui</file>
     <file>ui/styles.css</file>
     <file>ui/logo.png</file>

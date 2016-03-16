@@ -4,7 +4,7 @@
 #include <epoxy/gl.h>
 
 GLuint compile_shader(const char* src, GLenum type);
-GLboolean gen_program(GLuint *program);
+GLboolean gen_program(GLuint *program, const char* frag);
 GLint get_attrib(GLuint program, const char *name);
 GLint get_uniform(GLuint program, const char *name);
 

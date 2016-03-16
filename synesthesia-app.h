@@ -40,6 +40,7 @@ G_DECLARE_FINAL_TYPE (SynesthesiaApp, synesthesia_app, SYNESTHESIA, APP, GtkAppl
 gpointer synesthesia_app_get_ptrs (SynesthesiaApp *self);
 GtkWidget *synesthesia_app_get_window (SynesthesiaApp *self);
 GtkWidget *synesthesia_app_get_prefs (SynesthesiaApp *self);
+GtkWidget *synesthesia_app_get_shaders (SynesthesiaApp *self);
 
 GtkApplication *synesthesia_app_new (void);
 

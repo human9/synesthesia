@@ -1,11 +1,11 @@
 LIBS = $(GTK3_LIBS) $(EPOXY_LIBS) $(FFTW3_LIBS) $(PORTAUDIO_LIBS) $(PULSEAUDIO_LIBS) -lm
 FLAGS = $(CFLAGS) $(GTK3_CFLAGS) $(PORTAUDIO_CFLAGS) $(PULSEAUDIO_CFLAGS) 
 
-SRC = main.c synesthesia-app.c synesthesia-app-window.c preferences.c opengl-backend.c $(PULSE_FILE) $(PORT_FILE)
+SRC = main.c synesthesia-app.c synesthesia-app-window.c preferences.c shaders.c opengl-backend.c $(PULSE_FILE) $(PORT_FILE)
 GEN = synesthesia-gresources.c
 SCH = gschemas.compiled
 BIN = synesthesia$(EXE)
-HED = synesthesia-app.h synesthesia-app-window.h preferences.h opengl-backend.h pulse-input.h port-input.h config.h
+HED = synesthesia-app.h synesthesia-app-window.h preferences.h shaders.h opengl-backend.h pulse-input.h port-input.h config.h
 RES = resources/ui/* resources/shaders/* resources/settings/*
 ALL = $(GEN) $(SRC)
 

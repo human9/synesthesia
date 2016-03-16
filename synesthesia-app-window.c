@@ -74,6 +74,11 @@ GtkGLArea* synesthesia_app_window_get_glarea(SynesthesiaAppWindow *self)
 	return self->glarea;
 }
 
+GLuint* synesthesia_app_window_get_program(SynesthesiaAppWindow *self)
+{
+	return &self->program;
+}
+
 gint synesthesia_app_window_get_isfullscreen (SynesthesiaAppWindow *self)
 {
 	return self->isfullscreen;
@@ -184,7 +189,7 @@ static void quit_app(GtkApplicationWindow *window)
 
 gboolean button_event (GtkWidget *widget, GdkEventButton *event)
 {
-	toggle_spectype(SYNESTHESIA_APP_WINDOW(gtk_widget_get_toplevel(widget)));	
+	//toggle_spectype(SYNESTHESIA_APP_WINDOW(gtk_widget_get_toplevel(widget)));	
 	return TRUE;
 }
 
@@ -251,7 +256,7 @@ static void synesthesia_app_window_set_property (GObject *object, guint prop_id,
 
 gboolean glarea_init(SynesthesiaAppWindow *window)
 {
-	window->spectype = 0;
+	window->spectype = 1;
 	window->osc_left = g_new0(point, OSC_NUMPOINTS);
 	window->osc_right = g_new0(point, OSC_NUMPOINTS);
 	if (!window->hasinit)
@@ -282,7 +287,7 @@ gboolean glarea_init(SynesthesiaAppWindow *window)
 	glBufferData(GL_ARRAY_BUFFER, sizeof(point) * OSC_NUMPOINTS,
 		window->osc_right, GL_STREAM_DRAW);
 	
-	if (!gen_program(&(window->program)))
+	if (!gen_program(&(window->program), NULL))
 		return false;
 
 	window->attr_osc = get_attrib(window->program, "osc"); 
@@ -293,7 +298,7 @@ gboolean glarea_init(SynesthesiaAppWindow *window)
 	glBindVertexArray(window->gl_vao);
 
 
-	if (!window->hasinit)
+	if (1)
 	{
 		for (int i = 0; i < OSC_NUMPOINTS; i++)
 		{

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <object class="GtkAdjustment" id="simple_scale">
+	<property name="step_increment">0.05</property>
+    <property name="lower">0</property>
+    <property name="upper">1</property>
+    <property name="value">0</property>
+    <property name="page_increment">0.05</property>
+  </object>
+  <template class="SynesthesiaAppShaders" parent="GtkWindow">
+    <signal name="delete-event" handler="hide_shaders"/>
+    <property name="title">Shaders</property>
+    <property name="visible">False</property>
+    <property name="default_width">450</property>
+    <property name="default_height">450</property>
+    <child>
+	  <object class="GtkBox" id="Shaderbox">
+        <property name="visible">True</property>
+	    <property name="border_width">0</property>
+	    <property name="spacing">0</property>
+		<property name="orientation">vertical</property>
+    	<property name="visible">True</property>
+		<child>
+			<object class="GtkScrolledWindow" id="ScrolledWin">
+    		<property name="visible">True</property>
+    		<property name="hexpand">True</property>
+    		<property name="vexpand">True</property>
+				<child>
+					<object class="GtkTextView" id="textview">
+    				<property name="visible">True</property>
+    				<property name="editable">True</property>
+
+					</object>
+				</child>
+			</object>
+		</child>
+		<child>
+			<object class="GtkInfoBar" id="infobar">
+			</object>
+		</child>
+		<child>
+			<object class="GtkButton" id="compileshader">
+				<property name="visible">True</property>
+				<property name="label">_Compile</property>
+				<property name="use-underline">True</property>
+    			<signal name="clicked" swapped="yes" object="SynesthesiaAppShaders" handler="compile_buffer"/>
+			</object>
+		</child>
+	  </object>
+    </child>
+  </template>
+</interface>

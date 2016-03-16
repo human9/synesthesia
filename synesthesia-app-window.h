@@ -29,6 +29,6 @@ void synesthesia_app_window_set_opacity (SynesthesiaAppWindow *self,
 gfloat synesthesia_app_window_get_opacity (SynesthesiaAppWindow *self);
 void set_oscilloscope();
 GtkGLArea* synesthesia_app_window_get_glarea(SynesthesiaAppWindow *self);
-G_END_DECLS
+GLuint* synesthesia_app_window_get_program(SynesthesiaAppWindow *self);
 
 #endif

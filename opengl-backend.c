@@ -27,7 +27,7 @@ GLuint compile_shader(const char* src, GLenum type)
 	return shader;
 }
 
-GLboolean gen_program(GLuint *program)
+GLboolean gen_program(GLuint *program, const char* frag)
 {
 	// compile built in shaders	
 	GBytes *source;
@@ -37,10 +37,20 @@ GLboolean gen_program(GLuint *program)
 		GL_VERTEX_SHADER)) == 0)
 		return false;
 	g_bytes_unref(source);
-	source = g_resources_lookup_data("/shaders/f.glsl", 0, NULL);
-	if ((fs = compile_shader(g_bytes_get_data(source, NULL),
+	const char* fsrc;
+	if (frag == NULL)
+	{
+		source = g_resources_lookup_data("/shaders/f.glsl", 0, NULL);
+		fsrc = g_bytes_get_data(source, NULL);
+	}
+	else
+	{
+		fsrc = frag;
+	}
+	if ((fs = compile_shader(fsrc,
 		GL_FRAGMENT_SHADER)) == 0)
 		return false;
+	
 	g_bytes_unref(source);
 	
 	*program = glCreateProgram();
