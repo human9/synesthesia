@@ -6,7 +6,8 @@
 struct _SynesthesiaAppShaders
 {
 	GtkWindow parent;
-	GtkTextView *textview;
+	GtkTextView *vertview;
+	GtkTextView *fragview;
 	GtkTextBuffer *buffer;
 	GtkWidget *infobar;
 	GtkWidget *message;
@@ -55,7 +56,7 @@ static void synesthesia_app_shaders_init (SynesthesiaAppShaders *shaders)
 	GBytes *fragsrc = g_resources_lookup_data("/shaders/f.glsl", 0, NULL);
 	const char* fragstr = g_bytes_get_data(fragsrc, NULL);
 	gtk_text_buffer_set_text(shaders->buffer, fragstr, strlen(fragstr));
-	gtk_text_view_set_buffer(shaders->textview, shaders->buffer);
+	gtk_text_view_set_buffer(shaders->vertview, shaders->buffer);
 	
 	shaders->message = gtk_label_new("You should not be reading this");
 	gtk_widget_show(shaders->message);
@@ -70,7 +71,8 @@ static void synesthesia_app_shaders_class_init (SynesthesiaAppShadersClass *klas
 	gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (klass), "/ui/shaders.ui");
 	gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass), hide_shaders);
 	gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass), compile_buffer);
-	gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass), SynesthesiaAppShaders, textview);
+	gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass), SynesthesiaAppShaders, vertview);
+	gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass), SynesthesiaAppShaders, fragview);
 	gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass), SynesthesiaAppShaders, infobar);
 }
 

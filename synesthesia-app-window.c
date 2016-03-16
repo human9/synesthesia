@@ -275,6 +275,8 @@ gboolean glarea_init(SynesthesiaAppWindow *window)
 	g_print("Using OpenGL version %d.%d\n", maj, min);
 
 	glEnable(GL_BLEND);
+	glEnable(GL_PROGRAM_POINT_SIZE);
+	
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	
 	glGenBuffers(1, &(window->vbo_left));
@@ -335,7 +337,7 @@ static gboolean glarea_render_spectrum(SynesthesiaAppWindow *window)
 		0,
 		0
 	);
-	glDrawArrays(GL_LINE_STRIP, 0, OSC_NUMPOINTS);
+	glDrawArrays(GL_POINTS, 0, OSC_NUMPOINTS);
 	
 	// Right channel
 	glBindBuffer(GL_ARRAY_BUFFER, window->vbo_right);
@@ -349,7 +351,7 @@ static gboolean glarea_render_spectrum(SynesthesiaAppWindow *window)
 		//(GLvoid *)(sizeof(point)*(OSC_NUMPOINTS/2))
 		0
 	);
-	glDrawArrays(GL_LINE_STRIP, 0, OSC_NUMPOINTS);
+	glDrawArrays(GL_POINTS, 0, OSC_NUMPOINTS);
 
 	glDisableVertexAttribArray(window->attr_osc);
 	
