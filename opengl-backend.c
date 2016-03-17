@@ -27,16 +27,27 @@ GLuint compile_shader(const char* src, GLenum type)
 	return shader;
 }
 
-GLboolean gen_program(GLuint *program, const char* frag)
+GLboolean gen_program(GLuint *program, const char* vert, const char* frag)
 {
 	// compile built in shaders	
 	GBytes *source;
 	GLuint vs, fs;
-	source = g_resources_lookup_data("/shaders/v.glsl", 0, NULL);
-	if ((vs = compile_shader(g_bytes_get_data(source, NULL),
-		GL_VERTEX_SHADER)) == 0)
+	const char *vsrc;
+	/* I think there's undefined behaviour here somewhere but I can't find it.
+	 * If you compare vert to null here as you should compiling shaders hangs. */
+	if (frag == NULL)
+	{
+		source = g_resources_lookup_data("/shaders/v.glsl", 0, NULL);
+		vsrc = g_bytes_get_data(source, NULL);
+	}
+	else
+	{
+		vsrc = vert;
+	}
+	if ((vs = compile_shader(vsrc, GL_VERTEX_SHADER)) == 0)
 		return false;
 	g_bytes_unref(source);
+	
 	const char* fsrc;
 	if (frag == NULL)
 	{
@@ -47,8 +58,7 @@ GLboolean gen_program(GLuint *program, const char* frag)
 	{
 		fsrc = frag;
 	}
-	if ((fs = compile_shader(fsrc,
-		GL_FRAGMENT_SHADER)) == 0)
+	if ((fs = compile_shader(fsrc, GL_FRAGMENT_SHADER)) == 0)
 		return false;
 	
 	g_bytes_unref(source);
@@ -62,7 +72,7 @@ GLboolean gen_program(GLuint *program, const char* frag)
 	glGetProgramiv(*program, GL_LINK_STATUS, &link_ok);
 	if (!link_ok)
 	{
-		printf("Program linking failed!");
+		printf("Program linking failed!\n");
 		return false;
 	}
 

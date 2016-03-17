@@ -289,7 +289,7 @@ gboolean glarea_init(SynesthesiaAppWindow *window)
 	glBufferData(GL_ARRAY_BUFFER, sizeof(point) * OSC_NUMPOINTS,
 		window->osc_right, GL_STREAM_DRAW);
 	
-	if (!gen_program(&(window->program), NULL))
+	if (!gen_program(&(window->program), NULL, NULL))
 		return false;
 
 	window->attr_osc = get_attrib(window->program, "osc"); 

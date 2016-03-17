@@ -8,7 +8,8 @@ struct _SynesthesiaAppShaders
 	GtkWindow parent;
 	GtkTextView *vertview;
 	GtkTextView *fragview;
-	GtkTextBuffer *buffer;
+	GtkTextBuffer *vbuffer;
+	GtkTextBuffer *fbuffer;
 	GtkWidget *infobar;
 	GtkWidget *message;
 };
@@ -34,11 +35,12 @@ static gboolean compile_buffer(SynesthesiaAppShaders *shaders)
 	GtkWindow *window = gtk_window_get_transient_for(GTK_WINDOW(shaders));
 	GLuint *program = synesthesia_app_window_get_program(SYNESTHESIA_APP_WINDOW(window));
 	GtkTextIter sti, eni;
-	GLuint fs;
-	gtk_text_buffer_get_start_iter(shaders->buffer, &sti);
-	gtk_text_buffer_get_end_iter(shaders->buffer, &eni);
-	const char *src = gtk_text_buffer_get_text(shaders->buffer, &sti, &eni, FALSE);
-	if (gen_program(program, src))
+	GLuint fs, vs;
+	gtk_text_buffer_get_bounds(shaders->vbuffer, &sti, &eni);
+	const char *vsrc = gtk_text_buffer_get_text(shaders->vbuffer, &sti, &eni, FALSE);
+	gtk_text_buffer_get_bounds(shaders->fbuffer, &sti, &eni);
+	const char *fsrc = gtk_text_buffer_get_text(shaders->fbuffer, &sti, &eni, FALSE);
+	if (gen_program(program, vsrc, fsrc))
 	{
 		gtk_label_set_text(GTK_LABEL(shaders->message), "Compilation Done!");
 	}
@@ -49,14 +51,21 @@ static gboolean compile_buffer(SynesthesiaAppShaders *shaders)
 	return TRUE;
 }
 
+static void loadbuffer(const char *resource, GtkTextBuffer *buffer, GtkTextView *view)
+{
+	GBytes *src = g_resources_lookup_data(resource, 0, NULL);
+	const char* srcstr = g_bytes_get_data(src, NULL);
+	gtk_text_buffer_set_text(buffer, srcstr, strlen(srcstr));
+	gtk_text_view_set_buffer(view, buffer);
+}
+
 static void synesthesia_app_shaders_init (SynesthesiaAppShaders *shaders)
 {
 	gtk_widget_init_template (GTK_WIDGET (shaders));
-	shaders->buffer = gtk_text_buffer_new(NULL);
-	GBytes *fragsrc = g_resources_lookup_data("/shaders/f.glsl", 0, NULL);
-	const char* fragstr = g_bytes_get_data(fragsrc, NULL);
-	gtk_text_buffer_set_text(shaders->buffer, fragstr, strlen(fragstr));
-	gtk_text_view_set_buffer(shaders->vertview, shaders->buffer);
+	shaders->vbuffer = gtk_text_buffer_new(NULL);
+	shaders->fbuffer = gtk_text_buffer_new(NULL);
+	loadbuffer("/shaders/v.glsl", shaders->vbuffer, shaders->vertview);
+	loadbuffer("/shaders/f.glsl", shaders->fbuffer, shaders->fragview);
 	
 	shaders->message = gtk_label_new("You should not be reading this");
 	gtk_widget_show(shaders->message);
