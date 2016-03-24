@@ -2,7 +2,7 @@
 #define SYNESTHESIA_APP_H
 
 #include <gtk/gtk.h>
-#include "config.h"
+#include "../config.h"
 
 G_BEGIN_DECLS
 

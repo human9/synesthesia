@@ -2,6 +2,7 @@
 #define PORT_INPUT_H 
 
 #include <portaudio.h>
+#include "synesthesia-app.h"
 
 int port_init(void);
 int port_kill(void);

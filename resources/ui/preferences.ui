@@ -113,18 +113,6 @@
 				    <property name="top-attach">2</property>
 				  </packing>
 				</child>
-				<child>
-				  <object class="GtkButton" id="exitbutton">
-				    <signal name="clicked" swapped="yes" object="SynesthesiaAppPrefs" handler="go_normal"/>
-					<property name="label">Return to normal window</property>
-    				<property name="visible">True</property>
-					<property name="halign">GTK_ALIGN_START</property>
-				  </object>
-				  <packing>
-				    <property name="left-attach">0</property>
-				    <property name="top-attach">3</property>
-				  </packing>
-				</child>
 			  </object>
 			  <packing>
 			    <property name="title">Interface</property>
@@ -139,7 +127,7 @@
 				
 				<child>
 				  <object class="GtkLabel">
-					<property name="label">Input frequency</property>
+					<property name="label">One day, there will be options here</property>
     				<property name="visible">True</property>
 					<property name="halign">GTK_ALIGN_START</property>
 	    			<property name="hexpand">true</property>
@@ -164,7 +152,7 @@
 				<child>
 				  <object class="GtkLabel">
     				<property name="visible">True</property>
-				    <property name="label">Number of channels</property>
+				    <property name="label">Placeholder</property>
 					<property name="halign">GTK_ALIGN_START</property>
 				  </object>
 				  <packing>
@@ -181,28 +169,6 @@
 				  <packing>
 				    <property name="left-attach">1</property>
 				    <property name="top-attach">1</property>
-				  </packing>
-				</child>
-				<child>
-				  <object class="GtkLabel">
-    				<property name="visible">True</property>
-				    <property name="label">Bit depth</property>
-					<property name="halign">GTK_ALIGN_START</property>
-				  </object>
-				  <packing>
-				    <property name="left-attach">0</property>
-				    <property name="top-attach">2</property>
-				  </packing>
-				</child>
-				<child>
-				  <object class="GtkCheckButton">
-    				<property name="visible">True</property>
-				    <property name="active">true</property>
-					<property name="halign">GTK_ALIGN_END</property>
-				  </object>
-				  <packing>
-				    <property name="left-attach">1</property>
-				    <property name="top-attach">2</property>
 				  </packing>
 				</child>
 			  </object>
