@@ -10,43 +10,30 @@
 
 ====[ WHAT IS IT? ]====
 Live audio visualiser written in C using openGL and various audio backends.
-You can customise visualisations easily with GLSL!
-
+You can customise visualisations with GLSL!
 
 ====[ COMPILING/RUNNING ]====
 
 Requires FFTW3, GTK3+ (at least 3.16) and epoxy.
-Just ./configure, make and run.
+Just ./configure, make, and run.
+Should work to varying degrees on any platform, if you can compile it.
+You'll need autotools, pkg-config and yadda yadda of course. 
+
 If PortAudio or PulseAudio libs are found support will be compiled for them.
 To disable this, use --disable-pulse or --disable-port when running configure.
-
+You can compile without either if you feel like it. <- (not recommended)
 
 ====[ TODO ]====
 
--Maybe just uploading the buffers and a fullscreen quad to do pixel shading
-would be better
--Make HUD mode use the maximize function rather than fullscreen as fullscreen
-often leads to problems on certain wms.
--Sub data more efficiently - don't upload entire array in spec if not greater than
-current - instead float down. Also don't get audio until screen is ready - also
-don't upload x pointlessly 
--Fix overall logical structure - clean globals, move GTK & GL to seperate files
--Make better logarithmic mode - ie figure out how to make octaves equally spaced
--Make fancy new mode optional - fix gain slider
--Selection of whether STFT window should automatically overlap?
--Spetrogram mode
--Implement commandline options for HUD mode handling
--Implement a plugins system for visualisations
--Use asynchronous pulseaudio api for all operations
--Grid mode for accurate spectrum analysis
--Preferences dialogue
-	-Slider bar for logarithmic and linear amplification
-	-Settings for controlling latency and zoom
--Figure out if wayland problems are synesthesia's fault or GtkGLArea's
-
+-Proper saving/loading of shaders
+-Access to time and a big rectangle for fragment fun
+-A gain slider, preferably different for osc and spec modes
+-Make it actually start even if the settings schema !exists
+-Some kind of control over what vbos and uniforms are uploaded?
+-Clean up the audio backend stuff 
 
 ====[ WHAT'S DONE ]====
 
--Basic oscilloscope and spectrum (using FFTW) modes
--GUI setup using GtkBuilders
--Fullscreen, HUD, and normal modes
+-Working oscilloscope and spectrum modes
+-Audio backends that work alright I guess
+-Basic shader editing and compiling interface

@@ -269,7 +269,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-FLAGS = $(CFLAGS) $(GTK3_CFLAGS) $(PORTAUDIO_CFLAGS) $(PULSEAUDIO_CFLAGS) 
+FLAGS = -std=c99 $(CFLAGS) $(GTK3_CFLAGS) $(PORTAUDIO_CFLAGS) $(PULSEAUDIO_CFLAGS) 
 SRC = main.c synesthesia-app.c synesthesia-app-window.c preferences.c shaders.c opengl-backend.c $(PULSE_FILE) $(PORT_FILE)
 GEN = synesthesia-gresources.c
 SCH = gschemas.compiled

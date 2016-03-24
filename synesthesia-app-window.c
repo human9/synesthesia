@@ -334,10 +334,10 @@ static gboolean glarea_render_spectrum(SynesthesiaAppWindow *window)
 		2,
 		GL_FLOAT,
 		GL_FALSE,
-		0,
+		sizeof(point)*(OSC_NUMPOINTS/512),
 		0
 	);
-	glDrawArrays(GL_POINTS, 0, OSC_NUMPOINTS);
+	glDrawArrays(GL_POINTS, 0, OSC_NUMPOINTS/(OSC_NUMPOINTS/512));
 	
 	// Right channel
 	glBindBuffer(GL_ARRAY_BUFFER, window->vbo_right);
@@ -347,11 +347,11 @@ static gboolean glarea_render_spectrum(SynesthesiaAppWindow *window)
 		2,
 		GL_FLOAT,
 		GL_FALSE,
-		0,
+		sizeof(point)*(OSC_NUMPOINTS/512),
 		//(GLvoid *)(sizeof(point)*(OSC_NUMPOINTS/2))
 		0
 	);
-	glDrawArrays(GL_POINTS, 0, OSC_NUMPOINTS);
+	glDrawArrays(GL_POINTS, 0, OSC_NUMPOINTS/(OSC_NUMPOINTS/512));
 
 	glDisableVertexAttribArray(window->attr_osc);
 	
@@ -543,6 +543,13 @@ static gboolean glarea_repaint_spectrum(GtkWidget *widget, GdkFrameClock *mr_clo
 		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(point) * OSC_NUMPOINTS, window->osc_right);
 
 		gtk_widget_queue_draw(widget);
+		/*
+		for (int i = 0; i < 10; i++)
+		{
+			g_print("x:%fy:%f ", window->osc_right[i].x, window->osc_right[i].y);
+		}
+		g_print("\n");
+		*/
 	}
 	return 1;
 }

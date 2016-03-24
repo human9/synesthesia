@@ -33,9 +33,8 @@ GLboolean gen_program(GLuint *program, const char* vert, const char* frag)
 	GBytes *source;
 	GLuint vs, fs;
 	const char *vsrc;
-	/* I think there's undefined behaviour here somewhere but I can't find it.
-	 * If you compare vert to null here as you should compiling shaders hangs. */
-	if (frag == NULL)
+	/* I think there's undefined behaviour here somewhere but I can't find it. */
+	if (vert == NULL)
 	{
 		source = g_resources_lookup_data("/shaders/v.glsl", 0, NULL);
 		vsrc = g_bytes_get_data(source, NULL);

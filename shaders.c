@@ -40,6 +40,7 @@ static gboolean compile_buffer(SynesthesiaAppShaders *shaders)
 	const char *vsrc = gtk_text_buffer_get_text(shaders->vbuffer, &sti, &eni, FALSE);
 	gtk_text_buffer_get_bounds(shaders->fbuffer, &sti, &eni);
 	const char *fsrc = gtk_text_buffer_get_text(shaders->fbuffer, &sti, &eni, FALSE);
+	g_print("%s\n", fsrc);
 	if (gen_program(program, vsrc, fsrc))
 	{
 		gtk_label_set_text(GTK_LABEL(shaders->message), "Compilation Done!");

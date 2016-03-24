@@ -23,7 +23,7 @@ typedef struct
 snd_ptrs;
 
 #define BUFFSIZE 32
-#define OSC_NUMPOINTS 4096
+#define OSC_NUMPOINTS 4096 
 
 #ifdef HAVE_PULSE
 #include "pulse-input.h"
