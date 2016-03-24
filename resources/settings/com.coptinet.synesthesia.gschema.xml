@@ -6,6 +6,16 @@
 			<summary>Opacity</summary>
 			<description>Background opacity of visualisation</description>
 		</key>
+		<key name="oscgain" type="d">
+			<default>1</default>
+			<summary>Oscilloscope Gain</summary>
+			<description>Adjustment for oscilloscope amplification</description>
+		</key>
+		<key name="specgain" type="d">
+			<default>1</default>
+			<summary>Spectrum Gain</summary>
+			<description>Spectrum adjustment</description>
+		</key>
 		<key name="menus" type="b">
 			<default>true</default>
 			<summary>Menus</summary>

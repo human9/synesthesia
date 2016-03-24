@@ -27,6 +27,8 @@ struct _SynesthesiaAppWindow
 	gfloat *opacity_ptr;
 	gfloat zero;
 	gfloat opacity;
+	gfloat oscgain;
+	gfloat specgain;
 	guint timeout;
 	gboolean timeout_exists, menuhide, cursorhide;
 	gint isfullscreen, spectype;
@@ -99,12 +101,40 @@ gfloat synesthesia_app_window_get_opacity (SynesthesiaAppWindow *self)
 	return self->opacity;
 }
 
+gfloat synesthesia_app_window_get_oscgain (SynesthesiaAppWindow *self)
+{
+	return self->oscgain;
+}
+
+gfloat synesthesia_app_window_get_specgain (SynesthesiaAppWindow *self)
+{
+	return self->specgain;
+}
+
 void synesthesia_app_window_set_opacity (SynesthesiaAppWindow *self,
 	gfloat opacity)
 {
 	if (self->opacity != opacity)
 	{
 		self->opacity = opacity;
+	}
+}
+
+void synesthesia_app_window_set_oscgain (SynesthesiaAppWindow *self,
+	gfloat gain)
+{
+	if (self->oscgain != gain)
+	{
+		self->oscgain = gain;
+	}
+}
+
+void synesthesia_app_window_set_specgain (SynesthesiaAppWindow *self,
+	gfloat gain)
+{
+	if (self->specgain != gain)
+	{
+		self->specgain = gain;
 	}
 }
 
@@ -197,6 +227,8 @@ enum {
 	PROP_0,
 	ISFULLSCREEN,
 	OPACITY,
+	OSC_GAIN,
+	SPEC_GAIN,
 	MENUHIDE,
 	CURSORHIDE,
 	LAST_PROP
@@ -215,6 +247,12 @@ static void synesthesia_app_window_get_property (GObject *object, guint prop_id,
 			break;
 		case OPACITY:
 			g_value_set_double(value, synesthesia_app_window_get_opacity (self));
+			break;
+		case OSC_GAIN:
+			g_value_set_double(value, synesthesia_app_window_get_oscgain (self));
+			break;
+		case SPEC_GAIN:
+			g_value_set_double(value, synesthesia_app_window_get_specgain (self));
 			break;
 		case MENUHIDE:
 			g_value_set_boolean(value, synesthesia_app_window_get_menuhide (self));
@@ -241,6 +279,18 @@ static void synesthesia_app_window_set_property (GObject *object, guint prop_id,
 			gfloat opacity = g_value_get_double(value);
 			synesthesia_app_window_set_opacity (self, opacity);
 			break;
+		case OSC_GAIN:
+		;
+			gfloat gain = g_value_get_double(value);
+			synesthesia_app_window_set_oscgain (self, gain);
+			break;
+		case SPEC_GAIN:
+		;
+		{
+			gfloat gain = g_value_get_double(value);
+			synesthesia_app_window_set_specgain (self, gain);
+			break;
+		}
 		case MENUHIDE:
 		;
 			gboolean menu = g_value_get_boolean(value);
@@ -317,7 +367,6 @@ gboolean glarea_init(SynesthesiaAppWindow *window)
 
 static gboolean glarea_render_spectrum(SynesthesiaAppWindow *window)
 {
-
 	glClearColor(0, 0, 0, *window->opacity_ptr);
 	glClear(GL_COLOR_BUFFER_BIT);
 
@@ -360,7 +409,6 @@ static gboolean glarea_render_spectrum(SynesthesiaAppWindow *window)
 
 static gboolean glarea_render_oscilloscope(SynesthesiaAppWindow *window)
 {
-
 	glClearColor(0, 0, 0, *window->opacity_ptr);
 	glClear(GL_COLOR_BUFFER_BIT);
 
@@ -462,8 +510,11 @@ static gboolean glarea_repaint_spectrum(GtkWidget *widget, GdkFrameClock *mr_clo
 			case 1:
 				for (int i = 0; i < OSC_NUMPOINTS; i++) 
 				{
+					gfloat amp = window->specgain/100;
 					window->osc_left[i].y /= 2e5;
+					window->osc_left[i].y *= amp*amp;
 					window->osc_right[i].y /= 2e5; 
+					window->osc_right[i].y *= amp*amp; 
 				}
 		}
 		for (int i = 0; i < OSC_NUMPOINTS; i++)
@@ -566,6 +617,9 @@ static gboolean glarea_repaint_oscilloscope(GtkWidget *widget, GdkFrameClock *mr
 		{
 			window->osc_left[i].y /= 32768.0; 
 			window->osc_right[i].y /= 32768.0;  
+			gfloat amp = window->oscgain/100;
+			window->osc_left[i].y *= amp;
+			window->osc_right[i].y *= amp; 
 		}
 		
 		glBindBuffer(GL_ARRAY_BUFFER, window->vbo_left);
@@ -696,6 +750,14 @@ static void synesthesia_app_window_class_init (SynesthesiaAppWindowClass *klass)
 		g_param_spec_double ("opacity", "opacity", "gl context opacity", 0, 1, 1,
 		(G_PARAM_READWRITE));
 	
+	properties [OSC_GAIN] =
+		g_param_spec_double ("oscgain", "oscgain", "osc gain", 0, 200, 100,
+		(G_PARAM_READWRITE));
+	
+	properties [SPEC_GAIN] =
+		g_param_spec_double ("specgain", "specgain", "spec gain", 0, 200, 100,
+		(G_PARAM_READWRITE));
+	
 	properties [MENUHIDE] =
 		g_param_spec_boolean ("menuhide", "menuhide", "hide menu on new window", FALSE,
 		(G_PARAM_READWRITE));
@@ -735,6 +797,8 @@ static void synesthesia_app_window_init (SynesthesiaAppWindow *self)
 	self->settings = g_settings_new ("com.coptinet.synesthesia");
 
 	g_settings_bind (self->settings, "opacity", self, "opacity", G_SETTINGS_BIND_DEFAULT);
+	g_settings_bind (self->settings, "oscgain", self, "oscgain", G_SETTINGS_BIND_DEFAULT);
+	g_settings_bind (self->settings, "specgain", self, "specgain", G_SETTINGS_BIND_DEFAULT);
 	g_settings_bind (self->settings, "menus", self, "menuhide", G_SETTINGS_BIND_DEFAULT);
 	g_settings_bind (self->settings, "cursorhide", self, "cursorhide", G_SETTINGS_BIND_DEFAULT);
 

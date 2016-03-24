@@ -27,6 +27,12 @@ void toggle_spectype(SynesthesiaAppWindow *window);
 void synesthesia_app_window_set_opacity (SynesthesiaAppWindow *self,
 	gfloat opacity);
 gfloat synesthesia_app_window_get_opacity (SynesthesiaAppWindow *self);
+void synesthesia_app_window_set_oscgain (SynesthesiaAppWindow *self,
+	gfloat gain);
+gfloat synesthesia_app_window_get_oscgain (SynesthesiaAppWindow *self);
+void synesthesia_app_window_set_spegain (SynesthesiaAppWindow *self,
+	gfloat gain);
+gfloat synesthesia_app_window_get_specgain (SynesthesiaAppWindow *self);
 void set_oscilloscope();
 GtkGLArea* synesthesia_app_window_get_glarea(SynesthesiaAppWindow *self);
 GLuint* synesthesia_app_window_get_program(SynesthesiaAppWindow *self);
