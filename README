@@ -27,7 +27,6 @@ You can compile without either if you feel like it. <- (not recommended)
 
 -Proper saving/loading of shaders
 -Access to time and a big rectangle for fragment fun
--A gain slider, preferably different for osc and spec modes
 -Make it actually start even if the settings schema !exists
 -Some kind of control over what vbos and uniforms are uploaded?
 -Clean up the audio backend stuff 
