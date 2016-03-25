@@ -64,11 +64,13 @@ G_DEFINE_TYPE (SynesthesiaAppWindow, synesthesia_app_window, GTK_TYPE_APPLICATIO
 static gboolean render_callback(SynesthesiaAppWindow *window)
 {
 	glarea_render(window);
+	return true;
 }
 
 static gboolean repaint_callback(GtkWidget *widget, GdkFrameClock *mr_clock, gpointer data)
 {
 	glarea_repaint(widget, mr_clock, data);
+	return true;
 }
 
 GtkGLArea* synesthesia_app_window_get_glarea(SynesthesiaAppWindow *self)
@@ -209,6 +211,7 @@ static gboolean window_state_event(SynesthesiaAppWindow *window, GdkEventWindowS
 			g_signal_handlers_block_by_func(window, mouse_over, window);
 		}
 	}	
+	return true;
 }
 
 static void quit_app(GtkApplicationWindow *window)
@@ -477,7 +480,7 @@ static void update_buffers(SynesthesiaAppWindow *window)
 		}
 	}
 
-	for (int a = 0; i < OSC_NUMPOINTS; i++ && a++) 
+	for (; i < OSC_NUMPOINTS; i++) 
 	// this fills the rest of output if input has wrapped around (count != 0)
 	{
 		window->osc_left[i].y = window->pcm[i + window->count * BUFFSIZE].l;
@@ -701,7 +704,6 @@ void separate_window(SynesthesiaAppWindow *self, gboolean above)
 
 void main_window(SynesthesiaAppWindow *self)
 {
-	GtkWindow *window = self->separate;
 	self->opacity_ptr = &self->opacity;
 	gtk_container_remove(GTK_CONTAINER(self->separate), GTK_WIDGET(self->glarea)); 
 	gtk_container_add(GTK_CONTAINER(self->main_box), GTK_WIDGET(self->glarea));

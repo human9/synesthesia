@@ -35,13 +35,11 @@ static gboolean compile_buffer(SynesthesiaAppShaders *shaders)
 	GtkWindow *window = gtk_window_get_transient_for(GTK_WINDOW(shaders));
 	GLuint *program = synesthesia_app_window_get_program(SYNESTHESIA_APP_WINDOW(window));
 	GtkTextIter sti, eni;
-	GLuint fs, vs;
 	gtk_text_buffer_get_bounds(shaders->vbuffer, &sti, &eni);
-	const char *vsrc = gtk_text_buffer_get_text(shaders->vbuffer, &sti, &eni, FALSE);
+	const char *vert = gtk_text_buffer_get_text(shaders->vbuffer, &sti, &eni, FALSE);
 	gtk_text_buffer_get_bounds(shaders->fbuffer, &sti, &eni);
-	const char *fsrc = gtk_text_buffer_get_text(shaders->fbuffer, &sti, &eni, FALSE);
-	g_print("%s\n", fsrc);
-	if (gen_program(program, vsrc, fsrc))
+	const char *frag = gtk_text_buffer_get_text(shaders->fbuffer, &sti, &eni, FALSE);
+	if (gen_program(program, vert, frag))
 	{
 		gtk_label_set_text(GTK_LABEL(shaders->message), "Compilation Done!");
 	}

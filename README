@@ -25,7 +25,7 @@ You can compile without either if you feel like it. <- (not recommended)
 
 ====[ TODO ]====
 
--Proper saving/loading of shaders
+-Proper saving/loading of shaders - watching files so they can be edited externally
 -Access to time and a big rectangle for fragment fun
 -Make it actually start even if the settings schema !exists
 -Some kind of control over what vbos and uniforms are uploaded?

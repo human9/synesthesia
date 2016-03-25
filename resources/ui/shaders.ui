@@ -21,18 +21,8 @@
 		<property name="orientation">vertical</property>
     	<property name="visible">True</property>
 		<child>
-		  <object class="GtkStackSwitcher" id="switch">
-			<property name="stack">stack</property>
-			<property name="visible">True</property>
-			<property name="orientation">horizontal</property>
-			<property name="hexpand">False</property>
-		  </object>
-	    </child>
-		<child>
-			<object class="GtkStack" id="stack">
-				<property name="visible-child">vertex</property>
+			<object class="GtkNotebook" id="book">
 				<property name="visible">True</property>
-				<property name="transition-type">GTK_STACK_TRANSITION_TYPE_CROSSFADE</property>
 			<child>
 				<object class="GtkScrolledWindow" id="vertex">
 				<property name="visible">True</property>
@@ -40,16 +30,15 @@
 				<property name="vexpand">True</property>
 					<child>
 						<object class="GtkTextView" id="vertview">
-						<property name="visible">True</property>
-						<property name="editable">True</property>
-
+							<property name="visible">True</property>
+							<property name="editable">True</property>
 						</object>
 					</child>
 				</object>
-			  <packing>
-			    <property name="title">Vertex</property>
-			    <property name="name">vertex</property>
-		      </packing>
+				<packing>
+					<property name="tab-label">Vertex</property>
+					<property name="reorderable">True</property>
+				</packing>
 			</child>
 			<child>
 				<object class="GtkScrolledWindow" id="fragment">
@@ -64,10 +53,10 @@
 						</object>
 					</child>
 				</object>
-			  <packing>
-			    <property name="title">Fragment</property>
-			    <property name="name">fragment</property>
-		      </packing>
+				<packing>
+					<property name="tab-label">Fragment</property>
+					<property name="reorderable">True</property>
+				</packing>
 			</child>
 			</object>
 		</child>

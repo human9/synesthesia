@@ -1,5 +1,5 @@
 LIBS = $(GTK3_LIBS) $(EPOXY_LIBS) $(FFTW3_LIBS) $(PORTAUDIO_LIBS) $(PULSEAUDIO_LIBS) -lm
-FLAGS = -std=c99 $(CFLAGS) $(GTK3_CFLAGS) $(PORTAUDIO_CFLAGS) $(PULSEAUDIO_CFLAGS) 
+FLAGS = -std=c99 -Wall $(CFLAGS) $(GTK3_CFLAGS) $(PORTAUDIO_CFLAGS) $(PULSEAUDIO_CFLAGS) 
 VPATH = src:resources/ui:resources/shaders:resources/settings
 
 SRC = main.c synesthesia-app.c synesthesia-app-window.c preferences.c shaders.c opengl-backend.c $(PULSE_FILE) $(PORT_FILE)

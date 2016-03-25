@@ -33,11 +33,11 @@ GLboolean gen_program(GLuint *program, const char* vert, const char* frag)
 	GBytes *source;
 	GLuint vs, fs;
 	const char *vsrc;
-	/* I think there's undefined behaviour here somewhere but I can't find it. */
 	if (vert == NULL)
 	{
 		source = g_resources_lookup_data("/shaders/v.glsl", 0, NULL);
 		vsrc = g_bytes_get_data(source, NULL);
+		g_bytes_unref(source);
 	}
 	else
 	{
@@ -45,13 +45,13 @@ GLboolean gen_program(GLuint *program, const char* vert, const char* frag)
 	}
 	if ((vs = compile_shader(vsrc, GL_VERTEX_SHADER)) == 0)
 		return false;
-	g_bytes_unref(source);
 	
 	const char* fsrc;
 	if (frag == NULL)
 	{
 		source = g_resources_lookup_data("/shaders/f.glsl", 0, NULL);
 		fsrc = g_bytes_get_data(source, NULL);
+		g_bytes_unref(source);
 	}
 	else
 	{
@@ -60,7 +60,6 @@ GLboolean gen_program(GLuint *program, const char* vert, const char* frag)
 	if ((fs = compile_shader(fsrc, GL_FRAGMENT_SHADER)) == 0)
 		return false;
 	
-	g_bytes_unref(source);
 	
 	*program = glCreateProgram();
 	glAttachShader(*program, vs);
@@ -71,7 +70,7 @@ GLboolean gen_program(GLuint *program, const char* vert, const char* frag)
 	glGetProgramiv(*program, GL_LINK_STATUS, &link_ok);
 	if (!link_ok)
 	{
-		printf("Program linking failed!\n");
+		g_print("Program linking failed!\n");
 		return false;
 	}
 

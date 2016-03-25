@@ -162,15 +162,6 @@ static void above_all(ACTION_PARAMETERS)
 	}
 }
 
-static void hide_prefs(ACTION_PARAMETERS)
-{
-	gtk_widget_hide(SYNESTHESIA_APP(app)->preferences);
-}
-static void hide_shaders(ACTION_PARAMETERS)
-{
-	gtk_widget_hide(SYNESTHESIA_APP(app)->shaders);
-}
-
 static void preferences_window(ACTION_PARAMETERS)
 {
 	gtk_window_present (GTK_WINDOW (SYNESTHESIA_APP(app)->preferences));
