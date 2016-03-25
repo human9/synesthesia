@@ -142,8 +142,8 @@ am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/config.h.in \
 	$(top_srcdir)/autotools/compile \
 	$(top_srcdir)/autotools/install-sh \
 	$(top_srcdir)/autotools/missing AUTHORS COPYING ChangeLog \
-	INSTALL NEWS README TODO autotools/compile \
-	autotools/install-sh autotools/missing
+	INSTALL NEWS README autotools/compile autotools/install-sh \
+	autotools/missing
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -272,7 +272,7 @@ top_srcdir = @top_srcdir@
 FLAGS = -std=c99 -Wall $(CFLAGS) $(GTK3_CFLAGS) $(PORTAUDIO_CFLAGS) $(PULSEAUDIO_CFLAGS) 
 SRC = main.c synesthesia-app.c synesthesia-app-window.c preferences.c shaders.c opengl-backend.c $(PULSE_FILE) $(PORT_FILE)
 GEN = synesthesia-gresources.c
-SCH = gschemas.compiled
+SCH = gschemas.compiled Synesthesia.desktop
 BIN = synesthesia$(EXE)
 HED = synesthesia-app.h synesthesia-app-window.h preferences.h shaders.h opengl-backend.h pulse-input.h port-input.h config.h
 RES = f.glsl v.glsl logo.png menu.ui synesthesia.ui menu.ui preferences.ui shaders.ui separate.ui styles.css com.coptinet.synesthesia.gschema.xml
@@ -613,7 +613,8 @@ install-dvi: install-dvi-am
 install-dvi-am:
 
 install-exec-am:
-
+	@$(NORMAL_INSTALL)
+	$(MAKE) $(AM_MAKEFLAGS) install-exec-hook
 install-html: install-html-am
 
 install-html-am:
@@ -653,8 +654,9 @@ ps: ps-am
 ps-am:
 
 uninstall-am:
-
-.MAKE: all install-am install-strip
+	@$(NORMAL_INSTALL)
+	$(MAKE) $(AM_MAKEFLAGS) uninstall-hook
+.MAKE: all install-am install-exec-am install-strip uninstall-am
 
 .PHONY: CTAGS GTAGS TAGS all all-am am--refresh check check-am clean \
 	clean-cscope clean-generic cscope cscopelist-am ctags ctags-am \
@@ -664,12 +666,13 @@ uninstall-am:
 	distdir distuninstallcheck dvi dvi-am html html-am info \
 	info-am install install-am install-data install-data-am \
 	install-dvi install-dvi-am install-exec install-exec-am \
-	install-html install-html-am install-info install-info-am \
-	install-man install-pdf install-pdf-am install-ps \
-	install-ps-am install-strip installcheck installcheck-am \
-	installdirs maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-generic pdf pdf-am ps ps-am tags \
-	tags-am uninstall uninstall-am
+	install-exec-hook install-html install-html-am install-info \
+	install-info-am install-man install-pdf install-pdf-am \
+	install-ps install-ps-am install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-generic pdf \
+	pdf-am ps ps-am tags tags-am uninstall uninstall-am \
+	uninstall-hook
 
 .PRECIOUS: Makefile
 
@@ -690,6 +693,16 @@ $(BIN): $(SRC) $(HED) $(GEN) | $(SCH)
 
 clean:
 	rm -f $(GEN) $(SCH) $(BIN)
+
+install-exec-hook:
+	cp $(BIN) /usr/bin/
+	cp Synesthesia.desktop /usr/share/applications/
+	cp resources/ui/logo.png /usr/share/icons/synesthesia.png
+
+uninstall-hook:
+	rm /usr/bin/$(BIN) 
+	rm /usr/share/applications/Synesthesia.desktop
+	rm /usr/share/icons/synesthesia.png
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -4,7 +4,7 @@ VPATH = src:resources/ui:resources/shaders:resources/settings
 
 SRC = main.c synesthesia-app.c synesthesia-app-window.c preferences.c shaders.c opengl-backend.c $(PULSE_FILE) $(PORT_FILE)
 GEN = synesthesia-gresources.c
-SCH = gschemas.compiled
+SCH = gschemas.compiled Synesthesia.desktop
 BIN = synesthesia$(EXE)
 HED = synesthesia-app.h synesthesia-app-window.h preferences.h shaders.h opengl-backend.h pulse-input.h port-input.h config.h
 RES = f.glsl v.glsl logo.png menu.ui synesthesia.ui menu.ui preferences.ui shaders.ui separate.ui styles.css com.coptinet.synesthesia.gschema.xml
@@ -28,3 +28,13 @@ $(BIN): $(SRC) $(HED) $(GEN) | $(SCH)
 
 clean:
 	rm -f $(GEN) $(SCH) $(BIN)
+
+install-exec-hook:
+	cp $(BIN) /usr/bin/
+	cp Synesthesia.desktop /usr/share/applications/
+	cp resources/ui/logo.png /usr/share/icons/synesthesia.png
+
+uninstall-hook:
+	rm /usr/bin/$(BIN) 
+	rm /usr/share/applications/Synesthesia.desktop
+	rm /usr/share/icons/synesthesia.png
