@@ -281,6 +281,10 @@ static void prompt_for_file(GtkWindow *dialog_parent)
 		GtkFileChooser *chooser = GTK_FILE_CHOOSER (dialog);
 		filename = gtk_file_chooser_get_filename (chooser);
 	}
+	else
+	{
+		filename = NULL;
+	}
 
 	gtk_widget_destroy (dialog);
 }

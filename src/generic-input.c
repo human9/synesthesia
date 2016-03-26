@@ -18,24 +18,27 @@ gpointer generic_input(gpointer data)
 	pcmframe buff[BUFFSIZE*4];
 	size_t size = BUFFSIZE*sizeof(short)*2;
 
-	FILE *f = fopen(filename, "rb");
-	while (connected)
+	if (filename != NULL)
 	{
-		// our pcm is 2 channels, each channel = short int
-		fread(buff, size, 1, f);
-		
-		memcpy(temp_buffer + chunks*BUFFSIZE, buff, size);
-		
-		if (chunks * BUFFSIZE < OSC_NUMPOINTS - BUFFSIZE)
-			chunks++;
-		else
+		FILE *f = fopen(filename, "rb");
+		while (connected)
 		{
-			chunks = 0;
-			clearbuff = 1;
+			// our pcm is 2 channels, each channel = short int
+			fread(buff, size, 1, f);
+			
+			memcpy(temp_buffer + chunks*BUFFSIZE, buff, size);
+			
+			if (chunks * BUFFSIZE < OSC_NUMPOINTS - BUFFSIZE)
+				chunks++;
+			else
+			{
+				chunks = 0;
+				clearbuff = 1;
+			}
 		}
-	}
 
-	fclose(f);
+		fclose(f);
+	}
 
 	return 0;
 }
