@@ -2,11 +2,11 @@ LIBS = $(GTK3_LIBS) $(EPOXY_LIBS) $(FFTW3_LIBS) $(PORTAUDIO_LIBS) $(PULSEAUDIO_L
 FLAGS = -std=c99 -Wall $(CFLAGS) $(GTK3_CFLAGS) $(PORTAUDIO_CFLAGS) $(PULSEAUDIO_CFLAGS) 
 VPATH = src:resources/ui:resources/shaders:resources/settings
 
-SRC = main.c synesthesia-app.c synesthesia-app-window.c preferences.c shaders.c opengl-backend.c $(PULSE_FILE) $(PORT_FILE)
+SRC = main.c synesthesia-app.c synesthesia-app-window.c preferences.c shaders.c opengl-backend.c generic-input.c $(PULSE_FILE) $(PORT_FILE)
 GEN = synesthesia-gresources.c
-SCH = gschemas.compiled Synesthesia.desktop
+SCH = gschemas.compiled 
 BIN = synesthesia$(EXE)
-HED = synesthesia-app.h synesthesia-app-window.h preferences.h shaders.h opengl-backend.h pulse-input.h port-input.h config.h
+HED = synesthesia-app.h synesthesia-app-window.h preferences.h shaders.h opengl-backend.h pulse-input.h port-input.h generic-input.h config.h
 RES = f.glsl v.glsl logo.png menu.ui synesthesia.ui menu.ui preferences.ui shaders.ui separate.ui styles.css com.coptinet.synesthesia.gschema.xml
 ALL = $(GEN) $(SRC)
 
@@ -23,7 +23,7 @@ all: $(BIN)
 synesthesia-gresources.c: synesthesia.gresource.xml $(RES)
 	$(GLIB_COMPILE_RESOURCES) synesthesia.gresource.xml --target=$@ --sourcedir=resources --generate-source
 
-$(BIN): $(SRC) $(HED) $(GEN) | $(SCH)
+$(BIN): $(SRC) $(HED) $(GEN) | $(SCH) Synesthesia.desktop
 	$(CC) $^ -o $(@F) $(FLAGS) $(LIBS)
 
 clean:

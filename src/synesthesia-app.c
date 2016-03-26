@@ -3,6 +3,7 @@
 #include "synesthesia-app-window.h"
 #include "preferences.h"
 #include "shaders.h"
+#include "generic-input.h"
 
 #ifdef HAVE_PULSE
 #include "pulse-input.h"
@@ -76,6 +77,7 @@ static GActionEntry app_entries[] =
     { "shaders", shaders_window, NULL, NULL, NULL, },
     { "menubar", toggle_menubar, NULL, NULL, NULL, },
     { "refresh", refresh_action, NULL, NULL, NULL, },
+    {  "open", NULL, "s", "\"noinput\"",input_swap, },
 #ifdef HAVE_PULSE
     {  "pulse", NULL, "s", "\"noinput\"",input_swap, },
 #endif
@@ -122,9 +124,9 @@ static void about(ACTION_PARAMETERS)
 	sprintf(version_string, "Version %s, compiled %s %s with %s", VERSION, __DATE__, __TIME__, COMPILED_WITH);
 	gtk_show_about_dialog(gtk_application_get_active_window(app),
 		"program-name", PACKAGE_NAME,
-		"copyright", "© 2016 John Robert Salamon",
+		"copyright", "© 2016 John Salamon",
 		"license-type", GTK_LICENSE_GPL_3_0, "version", version_string,
-		"comments", "Synesthesia is a general purpose audio visualiser.", NULL);
+		"comments", "Synesthesia, audio visualizations with GLSL.", NULL);
 }
 
 static void fullscreen_mode(ACTION_PARAMETERS)
@@ -263,6 +265,26 @@ static void refresh_action(ACTION_PARAMETERS)
 	refresh_devices(app);
 }
 
+static void prompt_for_file(GtkWindow *dialog_parent)
+{
+	GtkWidget *dialog;
+	GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_OPEN;
+	gint res;
+
+	dialog = gtk_file_chooser_dialog_new ("Open FIFO", dialog_parent, action,
+										  "_Cancel", GTK_RESPONSE_CANCEL,
+										  "_Open", GTK_RESPONSE_ACCEPT, NULL);
+
+	res = gtk_dialog_run (GTK_DIALOG (dialog));
+	if (res == GTK_RESPONSE_ACCEPT)
+	{
+		GtkFileChooser *chooser = GTK_FILE_CHOOSER (dialog);
+		filename = gtk_file_chooser_get_filename (chooser);
+	}
+
+	gtk_widget_destroy (dialog);
+}
+
 static void input_swap(ACTION_PARAMETERS)
 {
 	SynesthesiaApp *synapp = SYNESTHESIA_APP (app);
@@ -278,6 +300,13 @@ static void input_swap(ACTION_PARAMETERS)
 
     if (synapp->ptrs.connection_active_ptr == NULL)
     {
+        if (g_strcmp0(api_name, "open") == 0)
+        {
+            synapp->ptrs.connection_active_ptr = generic_connection_active;
+            synapp->ptrs.disconnect_ptr = generic_disconnect;
+            synapp->ptrs.input_ptr = generic_input;
+            synapp->ptrs.getbuffer_ptr = generic_getbuffer;
+        }
         #ifdef HAVE_PULSE
         if (g_strcmp0(api_name, "pulse") == 0)
         {
@@ -308,6 +337,15 @@ static void input_swap(ACTION_PARAMETERS)
             g_thread_join(synapp->input_thread);
     }
 
+    if (g_strcmp0(api_name, "open") == 0)
+    {
+		prompt_for_file(GTK_WINDOW(synapp->window));
+        synapp->ptrs.connection_active_ptr = generic_connection_active;
+        synapp->ptrs.disconnect_ptr = generic_disconnect;
+        synapp->ptrs.input_ptr = generic_input;
+        synapp->ptrs.getbuffer_ptr = generic_getbuffer;
+        synapp->input_thread = g_thread_new("input_thread", synapp->ptrs.input_ptr, (void *)synapp->device_name);
+    }
     #ifdef HAVE_PULSE
     if (g_strcmp0(api_name, "pulse") == 0)
     {
@@ -390,7 +428,9 @@ static void synesthesia_app_activate (GApplication *app)
 	
 
 	if (self->window == NULL)
+	{
 		self->window = synesthesia_app_window_new (SYNESTHESIA_APP (app));
+	}
 
 	gtk_window_present (GTK_WINDOW (self->window));
 	

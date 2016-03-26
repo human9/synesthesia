@@ -6,6 +6,8 @@
 
 G_BEGIN_DECLS
 
+gchar *filename;
+
 typedef struct
 {
 	short l;

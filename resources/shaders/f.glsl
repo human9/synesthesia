@@ -5,11 +5,5 @@ varying float height;
 
 void main()
 {
-	gl_FragColor = vec4((position+1), 0.0, (-1*position+1),  1.0);
-	/*
-	gl_FragColor[0] = 0.0;
-	gl_FragColor[1] = 1.0;
-	gl_FragColor[2] = 1.0;
-	gl_FragColor[3] = 1.0;
-	*/
+	gl_FragColor = vec4((-1*height+1), 0.0, (height+1),  1.0);
 }

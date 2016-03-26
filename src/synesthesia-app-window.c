@@ -8,6 +8,8 @@
 #include <fftw3.h>
 #include "preferences.h"
 
+#define DIVISOR 512 
+
 typedef struct
 {
 	GLfloat x;
@@ -31,7 +33,7 @@ struct _SynesthesiaAppWindow
 	gfloat specgain;
 	guint timeout;
 	gboolean timeout_exists, menuhide, cursorhide;
-	gint isfullscreen, spectype;
+	gint isfullscreen;
 	gint hasinit;
 	
 	GtkWindow *separate;
@@ -309,7 +311,6 @@ static void synesthesia_app_window_set_property (GObject *object, guint prop_id,
 
 gboolean glarea_init(SynesthesiaAppWindow *window)
 {
-	window->spectype = 1;
 	window->osc_left = g_new0(point, OSC_NUMPOINTS);
 	window->osc_right = g_new0(point, OSC_NUMPOINTS);
 	if (!window->hasinit)
@@ -386,10 +387,10 @@ static gboolean glarea_render_spectrum(SynesthesiaAppWindow *window)
 		2,
 		GL_FLOAT,
 		GL_FALSE,
-		sizeof(point)*(OSC_NUMPOINTS/512),
+		sizeof(point)*(OSC_NUMPOINTS/DIVISOR),
 		0
 	);
-	glDrawArrays(GL_POINTS, 0, OSC_NUMPOINTS/(OSC_NUMPOINTS/512));
+	glDrawArrays(GL_POINTS, 0, OSC_NUMPOINTS/(OSC_NUMPOINTS/DIVISOR));
 	
 	// Right channel
 	glBindBuffer(GL_ARRAY_BUFFER, window->vbo_right);
@@ -399,11 +400,11 @@ static gboolean glarea_render_spectrum(SynesthesiaAppWindow *window)
 		2,
 		GL_FLOAT,
 		GL_FALSE,
-		sizeof(point)*(OSC_NUMPOINTS/512),
+		sizeof(point)*(OSC_NUMPOINTS/DIVISOR),
 		//(GLvoid *)(sizeof(point)*(OSC_NUMPOINTS/2))
 		0
 	);
-	glDrawArrays(GL_POINTS, 0, OSC_NUMPOINTS/(OSC_NUMPOINTS/512));
+	glDrawArrays(GL_POINTS, 0, OSC_NUMPOINTS/(OSC_NUMPOINTS/DIVISOR));
 
 	glDisableVertexAttribArray(window->attr_osc);
 	
@@ -506,55 +507,35 @@ static gboolean glarea_repaint_spectrum(GtkWidget *widget, GdkFrameClock *mr_clo
 	{
 		update_buffers(window);
 	
-		switch(window->spectype)
+		for (int i = 0; i < OSC_NUMPOINTS; i++) 
 		{
-			case 0:
-				break;
-			case 1:
-				for (int i = 0; i < OSC_NUMPOINTS; i++) 
-				{
-					gfloat amp = window->specgain/100;
-					window->osc_left[i].y /= 2e5;
-					window->osc_left[i].y *= amp*amp;
-					window->osc_right[i].y /= 2e5; 
-					window->osc_right[i].y *= amp*amp; 
-				}
-		}
-		for (int i = 0; i < OSC_NUMPOINTS; i++)
-		{
+			gfloat amp = window->specgain/100;
+			window->osc_left[i].y /= 2e5;
+			window->osc_left[i].y *= amp*amp;
+			window->osc_right[i].y /= 2e5; 
+			window->osc_right[i].y *= amp*amp; 
 			window->in[i] = (double complex)window->osc_left[i].y;
 		}
 
 		fftw_execute(window->p);
 		
-		int spacing = OSC_NUMPOINTS / 512;
+		int spacing = OSC_NUMPOINTS / DIVISOR;
 		int freq = 0;
+		// get actual frequency in Hz with freq * 44100(sample rate) / OSC_NUMPOINTS
 
 		for (int i = 0; i < OSC_NUMPOINTS; i++)
         {
-            switch(window->spectype)
-            {
-            case 0:
-
-                window->osc_left[i].y = (float)
-				( (log(10 * creal(window->out[i]*conj(window->out[i])))/log(1000) ) -1);
-                break;
-
-            case 1:
-
-                if (i % spacing == 0)
-                {
-					
-                    double value = (creal(window->out[freq]*conj(window->out[freq])));
-                    window->osc_left[i].y = (float)scaler(value, 6);
-                    freq++;
-                }
-                else
-                {
-                    window->osc_left[i].y = 0;
-                }
-                break;
-            }
+			if (i % spacing == 0)
+			{
+				
+				double value = (creal(window->out[freq]*conj(window->out[freq])));
+				window->osc_left[i].y = (float)scaler(value, 6);
+				freq++;
+			}
+			else
+			{
+				window->osc_left[i].y = 0;
+			}
         }
 
         for (int i = 0; i < OSC_NUMPOINTS; i++)
@@ -568,26 +549,16 @@ static gboolean glarea_repaint_spectrum(GtkWidget *widget, GdkFrameClock *mr_clo
 
 		for (int i = 0; i < OSC_NUMPOINTS; i++)
         {
-            switch(window->spectype)
-            {
-            case 0:
-                window->osc_right[i].y = (float)
-				( (log(10 * creal(window->out[i]*conj(window->out[i])))/log(1000) ) -1);
-                break;
-            case 1:
-                if (i % spacing == 0)
-                {
-                    double value = (creal(window->out[freq]*conj(window->out[freq])));
-                    window->osc_right[i].y = (float)scaler(value, 6) * -1;
-                    freq++;
-                }
-                else
-                {
-                    window->osc_right[i].y = 0;
-                }
-                break;
-            }
-
+			if (i % spacing == 0)
+			{
+				double value = (creal(window->out[freq]*conj(window->out[freq])));
+				window->osc_right[i].y = (float)scaler(value, 6) * -1;
+				freq++;
+			}
+			else
+			{
+				window->osc_right[i].y = 0;
+			}
         }
 		
 		glBindBuffer(GL_ARRAY_BUFFER, window->vbo_left);
@@ -597,13 +568,6 @@ static gboolean glarea_repaint_spectrum(GtkWidget *widget, GdkFrameClock *mr_clo
 		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(point) * OSC_NUMPOINTS, window->osc_right);
 
 		gtk_widget_queue_draw(widget);
-		/*
-		for (int i = 0; i < 10; i++)
-		{
-			g_print("x:%fy:%f ", window->osc_right[i].x, window->osc_right[i].y);
-		}
-		g_print("\n");
-		*/
 	}
 	return 1;
 }
@@ -709,20 +673,6 @@ void main_window(SynesthesiaAppWindow *self)
 	gtk_container_add(GTK_CONTAINER(self->main_box), GTK_WIDGET(self->glarea));
 
 	gtk_widget_destroy(GTK_WIDGET(self->separate));
-}
-
-
-void toggle_spectype(SynesthesiaAppWindow *window)
-{
-	switch(window->spectype)
-	{
-		case 0:
-			window->spectype = 1;
-			break;
-		case 1:
-			window->spectype = 0;
-			break;
-	}
 }
 
 void set_oscilloscope()

@@ -142,8 +142,8 @@ am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/config.h.in \
 	$(top_srcdir)/autotools/compile \
 	$(top_srcdir)/autotools/install-sh \
 	$(top_srcdir)/autotools/missing AUTHORS COPYING ChangeLog \
-	INSTALL NEWS README autotools/compile autotools/install-sh \
-	autotools/missing
+	INSTALL NEWS README TODO autotools/compile \
+	autotools/install-sh autotools/missing
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -270,11 +270,11 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 FLAGS = -std=c99 -Wall $(CFLAGS) $(GTK3_CFLAGS) $(PORTAUDIO_CFLAGS) $(PULSEAUDIO_CFLAGS) 
-SRC = main.c synesthesia-app.c synesthesia-app-window.c preferences.c shaders.c opengl-backend.c $(PULSE_FILE) $(PORT_FILE)
+SRC = main.c synesthesia-app.c synesthesia-app-window.c preferences.c shaders.c opengl-backend.c generic-input.c $(PULSE_FILE) $(PORT_FILE)
 GEN = synesthesia-gresources.c
-SCH = gschemas.compiled Synesthesia.desktop
+SCH = gschemas.compiled 
 BIN = synesthesia$(EXE)
-HED = synesthesia-app.h synesthesia-app-window.h preferences.h shaders.h opengl-backend.h pulse-input.h port-input.h config.h
+HED = synesthesia-app.h synesthesia-app-window.h preferences.h shaders.h opengl-backend.h pulse-input.h port-input.h generic-input.h config.h
 RES = f.glsl v.glsl logo.png menu.ui synesthesia.ui menu.ui preferences.ui shaders.ui separate.ui styles.css com.coptinet.synesthesia.gschema.xml
 ALL = $(GEN) $(SRC)
 gsettings_SCHEMAS = resources/settings/com.coptinet.synesthesia.gschema.xml
@@ -688,7 +688,7 @@ all: $(BIN)
 synesthesia-gresources.c: synesthesia.gresource.xml $(RES)
 	$(GLIB_COMPILE_RESOURCES) synesthesia.gresource.xml --target=$@ --sourcedir=resources --generate-source
 
-$(BIN): $(SRC) $(HED) $(GEN) | $(SCH)
+$(BIN): $(SRC) $(HED) $(GEN) | $(SCH) Synesthesia.desktop
 	$(CC) $^ -o $(@F) $(FLAGS) $(LIBS)
 
 clean:
